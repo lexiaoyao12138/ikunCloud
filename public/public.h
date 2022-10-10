@@ -28,3 +28,26 @@
 #include <sys/wait.h>
 #include <time.h>
 #include <unistd.h>
+
+#define COMMAND_CD 2
+#define COMMAND_LS 3
+#define COMMAND_PWD 4
+#define COMMAND_PUT 5
+#define COMMAND_GET 6
+#define COMMAND_RM 7
+#define COMMAND_MKDIR 8
+
+#define ERROR_CHECK(ret, res, name)                                            \
+  {                                                                            \
+    if (ret == res) {                                                          \
+      perror(name);                                                            \
+      exit(0);                                                                 \
+    }                                                                          \
+  }
+
+#define PTHREAD_CHECK(res, name)                                               \
+  do {                                                                         \
+    if (0 != res) {                                                            \
+      printf("%s: %s\n", name, strerror(res));                                 \
+    }                                                                          \
+  } while (0);
