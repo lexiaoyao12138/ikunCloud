@@ -1,6 +1,7 @@
 #include "../public/public.h"
 #include "taskQueue.h"
 
+
 typedef struct {
 	pthread_t * thread; 
   int threadNumber;
@@ -10,7 +11,7 @@ typedef struct {
 typedef struct {
 	int length;
 	char data[BUFSIZ];
-}train_t;
+}Mudhead_t;
 
 void * threadFunc(void*);
 
@@ -18,3 +19,5 @@ void threadpool_init(threadPool_t *);
 void threadPool_destroy(threadPool_t *);
 void threadPool_start(threadPool_t *);
 void threadPool_stop(threadPool_t *);
+
+
