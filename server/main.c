@@ -7,7 +7,7 @@ int main() {
 	config_t *config;
 
 	// 读取配置文件 
-	char *path = "../config/server.json";
+	char *path = CONFIG_PATH;
 	config = init_config_t();
 	get_config(path, config);
 
