@@ -55,7 +55,7 @@ void *threadFunc(void * arg)
             int peerfd = task_dequeue(&pthreadpool->queue);
             if(peerfd > 0)
             {
-                transfer_file(peerfd);_
+                transfer_file(peerfd);
             }
             else
             {
