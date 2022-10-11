@@ -21,10 +21,10 @@ int main( ) {
 
   //事件循环
   while(1){
+     FD_SET(STDIN_FILENO, &rdset);
      FD_SET(clientfd, &rdset);
      //clientfd 3
      
-     FD_SET(STDIN_FILENO, &rdset);
      //监听标准输入 0
      
      //当select函数返回时，rdset的集合已经被重新写入了
@@ -41,11 +41,13 @@ int main( ) {
          //发送给服务器
          write(clientfd, buff, strlen(buff));
          //当ret为0时，表示该连接已经断开
-         if(ret == 0){
-             break;
-         }
+         // if(ret == 0){
+         //     break;
+         // }
          printf("from server:%s\n",buff);
-     }
+     } else if (FD_ISSET(clientfd, &rdset)) {
+			printf("server reponse");
+		}
  }
 
 

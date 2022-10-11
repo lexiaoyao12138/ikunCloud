@@ -29,7 +29,7 @@ void transfer_file(int peerfd, const char * filename)
 	int rfd = open(filename, O_RDWR);
 	ERROR_CHECK(rfd, -1, "open");
   
-	Mudhead_t truck;
+	dumptruck_t truck;
 	memset(&truck, 0, sizeof(truck));
 
 	truck.length = strlen(filename);

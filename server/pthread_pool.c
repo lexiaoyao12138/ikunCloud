@@ -65,6 +65,7 @@ void *thread_func(void * arg)
         }
         printf("Tasks...\n");
         peerfd = pthreadpool->queue.pFront->peerfd;
+        pthread_mutex_unlock(&pthreadpool->queue.mutex);
         //任务出队
         task_dequeue(&pthreadpool->queue);
         //对应push, 线程pop
@@ -90,6 +91,7 @@ void handle_event(int peerfd, threadPool_t * pthreadpool)
     ERROR_CHECK(res, -1, "read");
     int cmd_type = atoi(buf);
 
+		puts("start handle client");
     switch(cmd_type)
     {
     case COMMAND_CD:
