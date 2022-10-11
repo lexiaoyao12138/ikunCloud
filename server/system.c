@@ -6,10 +6,10 @@ struct user_info{
 
 };
 
-int command_cd(char* arg,struct user_info){
+int command_cd(char* arg,struct user_info* u_info){
     int ret = chdir(arg);
     ERROR_CHECK(ret,-1,"chdir");
-    
+    strcpy(u_info->path,arg);
     return 0;
 }
 
