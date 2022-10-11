@@ -30,9 +30,7 @@ int main( ) {
      //当select函数返回时，rdset的集合已经被重新写入了
      //也是一个传出参数，写入的是已经发生了就绪事件的
      //文件描述符
-     //printf("c1111\n");
      select(clientfd + 1, &rdset, NULL, NULL, NULL);
-     //printf("c2222\n");
      
      //接下来要做的就是判断rdset中，有没有相应的fd
      if(FD_ISSET(STDIN_FILENO,&rdset)){
@@ -44,7 +42,6 @@ int main( ) {
          write(clientfd, buff, strlen(buff));
          //当ret为0时，表示该连接已经断开
          if(ret == 0){
-             printf("c333\n");
              break;
          }
          printf("from server:%s\n",buff);

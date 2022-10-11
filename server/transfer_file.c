@@ -43,7 +43,7 @@ void transfer_file(int peerfd, const char * filename)
   struct stat st;
 	fstat(rfd, &st);
 	printf("file length:%ld\n", st.st_size);
-  res = send_circle(rfd, (const char*)&st.st_size, st.st_size);
+  res = send_circle(peerfd, (const char*)&st.st_size, st.st_size);
 	ERROR_CHECK(res, -1, "send file_content");
 
 	char* pbuf = (char *)mmap(NULL, st.st_size, PROT_READ | PROT_WRITE, MAP_SHARED, rfd, 0);

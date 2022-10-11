@@ -2,7 +2,7 @@
 
 
 typedef struct {
-	pthread_t * thread; 
+	pthread_t * thread;
     int threadNumber;
 	taskQueue_t queue;
 }threadPool_t, *pthreadPool_t;
