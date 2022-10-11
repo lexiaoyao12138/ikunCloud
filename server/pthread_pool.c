@@ -60,8 +60,7 @@ void *thread_func(void * arg)
             pthread_cond_wait(&pthreadpool->queue.cond, &pthreadpool->queue.mutex);
             if(pthreadpool->queue.size == 0)
             {
-                printf("No tasks\n");
-                pthread_exit(NULL);
+                
             }
         }
         printf("Tasks...\n");
