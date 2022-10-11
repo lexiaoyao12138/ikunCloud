@@ -1,6 +1,6 @@
 #include "tcp.h"
 
-int tcp_init(const char *host, int port) {
+int tcp_init(char *host, int port) {
   int on = 1, res;
   // 1. 创建监听套接字
   int listenfd = socket(AF_INET, SOCK_STREAM, 0);
