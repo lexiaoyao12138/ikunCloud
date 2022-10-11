@@ -1,4 +1,3 @@
-#include "../public/public.h"
 #include "pthread_pool.h"
 
 void queue_init(taskQueue_t *que) {
@@ -74,3 +73,9 @@ int task_dequeue(taskQueue_t *que) {
   }
 }
 
+void queue_wakeup(taskQueue_t * que)
+{
+    que->exitFlag = 1;
+    pthread_cond_broadcast(&que->cond);
+
+}

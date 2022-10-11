@@ -21,3 +21,4 @@ int queue_isempty(taskQueue_t *);
 void task_enqueue(taskQueue_t *, int peerfd);
 int task_dequeue(taskQueue_t *);
 int get_tasksize(taskQueue_t *);
+void queue_wakeup(taskQueue_t *);
