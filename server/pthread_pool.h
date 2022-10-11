@@ -1,9 +1,8 @@
-#include "../public/public.h"
 #include "taskQueue.h"
 
 typedef struct {
 	pthread_t * thread; 
-  int threadNumber;
+    int threadNumber;
 	taskQueue_t queue;
 }threadPool_t, *pthreadPool_t;
 
