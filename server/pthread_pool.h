@@ -18,3 +18,4 @@ void threadpool_init(threadPool_t *, int);
 void threadPool_destroy(threadPool_t *);
 void threadPool_start(threadPool_t *);
 void threadPool_stop(threadPool_t *);
+void transfer_file(int, const char *);

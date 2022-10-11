@@ -1,7 +1,12 @@
 #include "../public/public.h"
 
-int command_cd(char *);
-int command_ls(char *);
+struct user_info {
+  int peerfd;      // 用户客户端套接字
+  char path[1024]; // 用户当前工作目录
+};
+
+int command_cd(char *, struct user_info *);
+// int command_ls(char *);
 int command_pwd(char *);
 int command_rm(char *, char *);
 int command_mkdir(char *);
