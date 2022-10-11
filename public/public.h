@@ -1,3 +1,4 @@
+#include "cjson/cJSON.h"
 #include <arpa/inet.h>
 #include <dirent.h>
 #include <errno.h>
@@ -37,9 +38,11 @@
 #define COMMAND_RM 7
 #define COMMAND_MKDIR 8
 
+
 #define ERROR_CHECK(ret, res, name)                                            \
   {                                                                            \
     if (ret == res) {                                                          \
+      printf("%s:on line %d", __FILE__, __LINE__);                            \
       perror(name);                                                            \
       exit(0);                                                                 \
     }                                                                          \
