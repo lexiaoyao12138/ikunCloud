@@ -4,6 +4,13 @@
 #include "tcp.h"
 #include "system.h"
 
+int exit_pipe[2];
+
+void sign_function(int sign) {
+	char *buf = "exit";
+	write(exit_pipe[1], buf, strlen(buf));
+}
+
 int main() {
 	int res;          /*return values*/ 
 	int epoll_ready_num;
@@ -13,6 +20,13 @@ int main() {
 	struct epoll_event *epoll_event_list;
 	struct sockaddr_in client_addr;
 	socklen_t client_addr_len;
+
+	pipe(exit_pipe);
+	pid_t pid = fork();
+	if (pid > 0) {
+		wait(NULL);
+		exit(0);
+	}
 
 	// 读取配置文件 
 	char *path = CONFIG_PATH;
@@ -32,6 +46,7 @@ int main() {
 
 	// 加入监听套接字
 	epoll_add(epfd, listenfd);
+	epoll_add(epfd, exit_pipe[0]);
 	epoll_event_list = (struct epoll_event*)calloc(config->epoll_num, sizeof(struct epoll_event));
 	
 	while (1) {
@@ -62,6 +77,12 @@ int main() {
 					// 加入队列
 					task_enqueue(&pthread_pool.queue, clientFd);
 				} 
+				if (tempFd == exit_pipe[0]) {
+					bzero(buf, sizeof(buf));
+					read(tempFd, buf, sizeof(buf));
+
+					threadPool_stop(&pthread_pool);
+				}
 
 			}
 		}
