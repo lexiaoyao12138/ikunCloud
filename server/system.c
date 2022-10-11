@@ -19,12 +19,16 @@ int command_pwd(char * cwd)
     return 0;
 }
 
-int command_rm(char *, char *)
+int command_rm(char *_dir_name, char *path)
 {
-
+    int ret = rmdir(path);
+    ERROR_CHECK(ret,-1,"rmdir");
+    return 0;
 }
 
-int command_mkdir(char *)
+int command_mkdir(char *path)
 {
-
+    int ret = mkdir(path,0666);
+    ERROR_CHECK(ret,-1,"mkdir");
+    return 0 ;
 }
