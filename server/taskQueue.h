@@ -8,8 +8,8 @@ typedef struct task_s {
 typedef struct taskQueue_s {
 	task_t * pFront;
 	task_t * pRear;
-	int queSize;
-	int exitFlag;
+	int size;    //任务队列大小
+	int exitFlag;    //退出标志
 	pthread_mutex_t mutex;
 	pthread_cond_t cond;
 }taskQueue_t;

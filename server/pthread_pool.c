@@ -25,7 +25,7 @@ void threadPool_start(threadPool_t * pthreadpool)
 {
     for(int i = 0; i < pthreadpool->threadNumber; ++i)
     {
-        int ret = pthread_create(&pthreadpool->thread[i], NULL, threadFunc, pthreadpool);
+        int ret = pthread_create(&pthreadpool->thread[i], NULL, thread_func, pthreadpool);
         PTHREAD_CHECK(ret, "pthread_create");
     }
 
@@ -44,26 +44,65 @@ void threadPool_stop(threadPool_t * pthreadpool)
     }
 }
 
-void *threadFunc(void * arg)
+void *thread_func(void * arg)
 {
-    threadPool_t * pthreadpool = (threadPool_t *)arg;
-    
+    int peerfd;
     while(1)
     {
-        if(pthreadpool)
+        threadPool_t * pthreadpool = (threadPool_t *)arg;
+        //互斥锁
+        pthread_mutex_lock(&pthreadpool->queue.mutex);
+        //线程清理函数
+        pthread_cleanup_push(clean_func, (void *)pthreadpool);
+        while(queue_isempty(&pthreadpool->queue))
         {
-            int peerfd = task_dequeue(&pthreadpool->queue);
-            if(peerfd > 0)
+            //等待解锁
+            pthread_cond_wait(&pthreadpool->queue.cond, &pthreadpool->queue.mutex);
+            if(pthreadpool->queue.size == 0)
             {
-                transfer_file(peerfd);_
-            }
-            else
-            {
-                break;
+                printf("No tasks\n");
+                pthread_exit(NULL);
             }
         }
+        printf("Tasks...\n");
+        peerfd = pthreadpool->queue.pFront->peerfd;
+        //任务出队
+        task_dequeue(&pthreadpool->queue);
+        //对应push, 线程pop
+        pthread_cleanup_pop(1);
+        handle_event(peerfd, pthreadpool);
+        printf("Task done\n");
     }
-    return NULL;
 }
 
+void handle_event(int peerfd, threadPool_t * pthreadpool)
+{
+    char buf[BUFSIZ];
+    bzero(buf, sizeof(buf));
+    int res = read(peerfd, buf, sizeof(buf));
+    ERROR_CHECK(res, -1, "read");
+    int cmd_type = atoi(buf);
 
+    switch(cmd_type)
+    {
+    case COMMAND_CD:
+        command_cd()
+    case COMMAND_LS:
+    case COMMAND_PWD:
+    case COMMAND_PUT:
+    case COMMAND_GET:
+    case COMMAND_RM:
+    case COMMAND_MKDIR:
+    case:
+        
+            
+    }
+
+}
+
+void clean_func(void *parg)
+{
+    printf("clean\n");
+    threadPool_t * pthreadpool = (threadPool_t *)parg;
+    pthread_mutex_unlock(&pthreadpool->queue.mutex);
+}
