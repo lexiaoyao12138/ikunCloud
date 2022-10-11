@@ -1,4 +1,5 @@
 #include "server.h"
+#include <cjson/cJSON.h>
 
 // 结构体初始化
 config_t *init_config_t() {
@@ -33,6 +34,10 @@ void get_config(const char *path, config_t *config) {
 	cJSON *cphthread_num = cJSON_GetObjectItem(json, "pthreadNum");
 	config->pthread_num = cphthread_num->valueint;
 	// printf("phthread_num: %d\n", config->pthread_num);
+	
+	cJSON *cepoll_num = cJSON_GetObjectItem(json, "epoll_num");
+	config->epoll_num = cphthread_num->valueint;
+	// printf("epoll_num: %d\n", config->epoll_num);
 
   cJSON_Delete(json);
 }
