@@ -1,5 +1,5 @@
 #include "pthread_pool.h"
-
+#include "system.h"
 
 void threadpool_init(threadPool_t * pthreadpool, int pthreadNum)
 {
@@ -74,6 +74,14 @@ void *thread_func(void * arg)
     }
 }
 
+void handle_command_cd();
+
+void handle_command_pwd();
+
+void handle_command_rm();
+
+void handle_command_mkdir();
+
 void handle_event(int peerfd, threadPool_t * pthreadpool)
 {
     char buf[BUFSIZ];
@@ -85,18 +93,46 @@ void handle_event(int peerfd, threadPool_t * pthreadpool)
     switch(cmd_type)
     {
     case COMMAND_CD:
-        command_cd()
-    case COMMAND_LS:
-    case COMMAND_PWD:
-    case COMMAND_PUT:
-    case COMMAND_GET:
-    case COMMAND_RM:
-    case COMMAND_MKDIR:
-    case:
-        
+       // handle_command_cd();
+        printf("cd\n");
+        break;
+    // case COMMAND_LS:
+    // case COMMAND_PWD:
+    //     handle_command_pwd();
+    //     break;
+    // case COMMAND_PUT:
+    // case COMMAND_GET:
+    // case COMMAND_RM:
+    //     handle_command_rm();
+    //     break;
+    // case COMMAND_MKDIR:
+    //     handle_command_mkdir();
+    //     break;
             
     }
 
+}
+
+void handle_command_cd()
+{
+    struct user_info  user_msg;
+    command_cd(CURRENT_PATH, &user_msg);
+}
+
+void handle_command_pwd()
+{
+    char *cwd;
+    command_pwd(cwd);
+}
+
+void handle_command_rm(char *filename)
+{
+    command_rm(filename, CURRENT_PATH);
+}
+
+void handle_command_mkdir(char *path)
+{
+    command_mkdir(path);
 }
 
 void clean_func(void *parg)
