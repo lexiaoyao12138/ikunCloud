@@ -8,7 +8,7 @@ address: [cJSON](https://github.com/DaveGamble/cJSON)
 ### 使用步骤
 ```shell
 mkdir build
-cd build && cmake
+cd build && cmake ..
 make
 sudo make install
 ```
