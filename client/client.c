@@ -32,9 +32,9 @@ int main() {
   serveraddr.sin_addr.s_addr = inet_addr("127.0.0.1");
 
   // 2.1 直接连接服务器
-  int ret =
+  res =
       connect(clientfd, (struct sockaddr *)&serveraddr, sizeof(serveraddr));
-  ERROR_CHECK(ret, -1, "connect");
+  ERROR_CHECK(res, -1, "connect");
   //当connet正常返回时，链接已经建立成功了
  
   fd_set rdset;
@@ -52,21 +52,32 @@ int main() {
     // 文件描述符
     select(clientfd + 1, &rdset, NULL, NULL, NULL);
 
-    char buff[100] = {0};
+    char buff[BUFSIZ] = {0};
+    dumpTruck_t truck;
     // 接下来要做的就是判断rdset中，有没有相应的fd
     if (FD_ISSET(STDIN_FILENO, &rdset)) {
+      //将输入的命令发送至服务器
       read(STDIN_FILENO, buff, sizeof(buff));
-      write(clientfd, buff, strlen(buff));
-      printf("from server:%s\n", buff);
-
+      int res = send(clientfd,buff,strlen(buff),0);
+      ERROR_CHECK(res,-1,"send");
+      if(res == 0){
+        puts("链接断开！");
+        exit(0);
+      }
     } else if (FD_ISSET(clientfd, &rdset)) {
-      res = read(clientfd, buff, sizeof(buff));
+      char *client_mode[2] = {"file","cmd"};
+      res = recv(clientfd, buff, sizeof(buff), 0);
       ERROR_CHECK(res, -1, "read");
       if (res == 0) {
         puts("服务器断开连接");
         exit(0);
       }
-      puts(buff);
+      if(strcmp(buff,client_mode[0]) == 0){
+        recv_file(clientfd);
+      }else if(strcmp(buff,client_mode[1]) == 0){
+        recv(clientfd,buff,sizeof(buff),0);
+        puts(buff);
+      }
     }
   }
 }
