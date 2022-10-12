@@ -1,5 +1,16 @@
 #include "../public/public.h"
 
+int commd_analyse(char* cmd_in,struct ){
+    char cmd_mode[4] = {0};
+    char *pcmd = cmd_in;
+    while(*(pcmd++) != ' '){
+        *(cmd_mode++) = *pcmd;
+    }
+
+    if()
+
+}
+
 int main( ) {
   // 1. 创建监听套接字
   int clientfd = socket(AF_INET, SOCK_STREAM, 0);
