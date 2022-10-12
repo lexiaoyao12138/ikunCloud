@@ -4,7 +4,7 @@ void queue_init(taskQueue_t *que) {
   if (que) {
     que->pFront = NULL;
     que->pRear = NULL;
-    que->queSize = 0;
+    que->size = 0;
     que->exitFlag = 0;
 
     int ret = pthread_mutex_init(&que->mutex, NULL);
@@ -25,9 +25,9 @@ void queue_destroy(taskQueue_t *que) {
   }
 }
 
-int queue_isempty(taskQueue_t *que) { return que->queSize == 0; }
+int queue_isempty(taskQueue_t *que) { return que->size == 0; }
 
-int get_tasksize(taskQueue_t *que) { return que->queSize; }
+int get_tasksize(taskQueue_t *que) { return que->size; }
 
 void task_enqueue(taskQueue_t *que, int peerfd) {
   pthread_mutex_lock(&que->mutex);
@@ -35,22 +35,25 @@ void task_enqueue(taskQueue_t *que, int peerfd) {
   pnewTask->peerfd = peerfd;
   pnewTask->pnext = NULL;
 
-  if (que->queSize == 0) {
+  if (que->size == 0) {
     que->pFront = que->pRear = pnewTask;
   } else {
     que->pRear->pnext = pnewTask;
     que->pRear = pnewTask;
   }
-  que->queSize++;
+  que->size++;
 
   pthread_mutex_unlock(&que->mutex);
   pthread_cond_signal(&que->cond);
 }
 
 int task_dequeue(taskQueue_t *que) {
-  pthread_mutex_lock(&que->mutex);
+	puts("task_dequeue.......");
+  int pth = pthread_mutex_lock(&que->mutex);
+	printf("pth: %d\n", pth);
 
   while (!que->exitFlag && queue_isempty(que)) {
+		puts("00000000000000");
     pthread_cond_wait(&que->cond, &que->mutex);
   }
 
@@ -62,7 +65,7 @@ int task_dequeue(taskQueue_t *que) {
     } else {
       que->pFront = que->pRear = NULL;
     }
-    que->queSize--;
+    que->size--;
 
     pthread_mutex_unlock(&que->mutex);
     free(delNote);

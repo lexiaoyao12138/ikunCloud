@@ -41,7 +41,7 @@ int main() {
 	int listenfd = tcp_init(config->host, config->port);
 
 	// 创建epoll树节点
-	int epfd = epoll_create(0);
+	int epfd = epoll_create1(0);
 	ERROR_CHECK(epfd, -1, "epoll_create");
 
 	// 加入监听套接字
