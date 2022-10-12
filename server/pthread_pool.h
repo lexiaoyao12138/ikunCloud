@@ -20,5 +20,5 @@ void threadPool_destroy(thread_pool_t *);
 void threadPool_start(thread_pool_t *);
 void threadPool_stop(thread_pool_t *);
 void clean_func(void *);
-void handle_event(int, thread_pool_t *);
+void handle_event(task_t, thread_pool_t *);
 void transfer_file(int, const char *);

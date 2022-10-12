@@ -56,18 +56,25 @@ int main() {
     dumpTruck_t truck;
     // 接下来要做的就是判断rdset中，有没有相应的fd
     if (FD_ISSET(STDIN_FILENO, &rdset)) {
+			/*------------------------------------------*/
+			res = write(clientfd, "ikun", 4);
+			ERROR_CHECK(res, -1, "write");
+			/*------------------------------------------*/
+			puts("已发送ikun");
       //将输入的命令发送至服务器
       read(STDIN_FILENO, buff, sizeof(buff));
       int res = send(clientfd,buff,strlen(buff),0);
       ERROR_CHECK(res,-1,"send");
+			puts("send success");
       if(res == 0){
         puts("链接断开！");
         exit(0);
       }
     } else if (FD_ISSET(clientfd, &rdset)) {
-      char *client_mode[2] = {"file","cmd"};
-      res = recv(clientfd, buff, sizeof(buff), 0);
+      char *client_mode[2] = {"file","ikun"};
+      res = recv(clientfd, buff, 4, 0);
       ERROR_CHECK(res, -1, "read");
+			puts(buff);
       if (res == 0) {
         puts("服务器断开连接");
         exit(0);

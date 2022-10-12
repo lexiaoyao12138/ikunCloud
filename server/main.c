@@ -76,6 +76,7 @@ int main() {
 
 					// 加入队列
 					task_enqueue(&pthread_pool.queue, clientFd);
+					epoll_add(epfd, clientFd);
 				} 
 				if (tempFd == exit_pipe[0]) {
 					bzero(buf, sizeof(buf));
@@ -85,6 +86,11 @@ int main() {
 					threadPool_destroy(&pthread_pool);
 					exit(0);
 				}
+				// handle other command
+				task_enqueue(&pthread_pool.queue, tempFd);
+				// bzero(buf, sizeof(buf));
+				// res = read(tempFd, buf, sizeof(buf));
+				// puts(buf);
 
 			}
 		}
