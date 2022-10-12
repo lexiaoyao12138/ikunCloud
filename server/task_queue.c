@@ -47,12 +47,7 @@ void task_enqueue(task_queue_t *que, int peerfd) {
   pthread_cond_signal(&que->cond);
 }
 
-<<<<<<< HEAD:server/taskQueue.c
-int task_dequeue(taskQueue_t *que) {
-=======
 int task_dequeue(task_queue_t *que) {
-	puts("task_dequeue.......");
->>>>>>> 9223a7a71ae0d99307dc192715ebbace760e6e79:server/task_queue.c
   int pth = pthread_mutex_lock(&que->mutex);
 
   while (!que->exitFlag && queue_isempty(que)) {
