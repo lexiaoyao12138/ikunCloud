@@ -114,7 +114,7 @@ void handle_event(int peerfd, thread_pool_t * pthreadpool)
     // case COMMAND_MKDIR:
     //     handle_command_mkdir();
     //     break;
-            
+		default:	break;
     }
 
 }
