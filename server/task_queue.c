@@ -1,6 +1,6 @@
 #include "pthread_pool.h"
 
-void queue_init(taskQueue_t *que) {
+void queue_init(task_queue_t *que) {
   if (que) {
     que->pFront = NULL;
     que->pRear = NULL;
@@ -15,7 +15,7 @@ void queue_init(taskQueue_t *que) {
   }
 }
 
-void queue_destroy(taskQueue_t *que) {
+void queue_destroy(task_queue_t *que) {
   if (que) {
     int ret = pthread_mutex_destroy(&que->mutex);
     PTHREAD_CHECK(ret, "pthread_mutex_destroy");
@@ -25,11 +25,11 @@ void queue_destroy(taskQueue_t *que) {
   }
 }
 
-int queue_isempty(taskQueue_t *que) { return que->size == 0; }
+int queue_isempty(task_queue_t *que) { return que->size == 0; }
 
-int get_tasksize(taskQueue_t *que) { return que->size; }
+int get_tasksize(task_queue_t *que) { return que->size; }
 
-void task_enqueue(taskQueue_t *que, int peerfd) {
+void task_enqueue(task_queue_t *que, int peerfd) {
   pthread_mutex_lock(&que->mutex);
   task_t *pnewTask = (task_t *)calloc(1, sizeof(task_t));
   pnewTask->peerfd = peerfd;
@@ -47,7 +47,7 @@ void task_enqueue(taskQueue_t *que, int peerfd) {
   pthread_cond_signal(&que->cond);
 }
 
-int task_dequeue(taskQueue_t *que) {
+int task_dequeue(task_queue_t *que) {
 	puts("task_dequeue.......");
   int pth = pthread_mutex_lock(&que->mutex);
 	printf("pth: %d\n", pth);
@@ -76,7 +76,7 @@ int task_dequeue(taskQueue_t *que) {
   }
 }
 
-void queue_wakeup(taskQueue_t * que)
+void queue_wakeup(task_queue_t * que)
 {
     que->exitFlag = 1;
     pthread_cond_broadcast(&que->cond);

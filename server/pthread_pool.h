@@ -1,11 +1,11 @@
-#include "taskQueue.h"
+#include "task_queue.h"
 
 
 typedef struct {
 	pthread_t * thread;
     int threadNumber;
-	taskQueue_t queue;    //任务队列
-}threadPool_t, *pthreadPool_t;
+	task_queue_t queue;    //任务队列
+}thread_pool_t, *pthread_pool_t;
 
 typedef struct {
 	int length;
@@ -15,10 +15,10 @@ typedef struct {
 void * threadFunc(void*);
 
 void * thread_func(void *);
-void threadpool_init(threadPool_t *, int);
-void threadPool_destroy(threadPool_t *);
-void threadPool_start(threadPool_t *);
-void threadPool_stop(threadPool_t *);
+void threadpool_init(thread_pool_t *, int);
+void threadPool_destroy(thread_pool_t *);
+void threadPool_start(thread_pool_t *);
+void threadPool_stop(thread_pool_t *);
 void clean_func(void *);
-void handle_event(int, threadPool_t *);
+void handle_event(int, thread_pool_t *);
 void transfer_file(int, const char *);

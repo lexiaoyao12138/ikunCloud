@@ -33,7 +33,7 @@ int main() {
 	config = init_config_t();
 	get_config(path, config);
 
-	threadPool_t pthread_pool;
+	thread_pool_t pthread_pool;
 	threadpool_init(&pthread_pool, config->pthread_num);
 	threadPool_start(&pthread_pool);
 
