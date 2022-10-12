@@ -48,12 +48,9 @@ void task_enqueue(taskQueue_t *que, int peerfd) {
 }
 
 int task_dequeue(taskQueue_t *que) {
-	puts("task_dequeue.......");
   int pth = pthread_mutex_lock(&que->mutex);
-	printf("pth: %d\n", pth);
 
   while (!que->exitFlag && queue_isempty(que)) {
-		puts("00000000000000");
     pthread_cond_wait(&que->cond, &que->mutex);
   }
 
