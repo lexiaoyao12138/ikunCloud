@@ -1,7 +1,7 @@
 #include "pthread_pool.h"
 #include "system.h"
 
-void threadpool_init(threadPool_t * pthreadpool, int pthreadNum)
+void threadpool_init(thread_pool_t * pthreadpool, int pthreadNum)
 {
     if(pthreadpool)
     {
@@ -11,7 +11,7 @@ void threadpool_init(threadPool_t * pthreadpool, int pthreadNum)
     }
 }
  
-void threadPool_destroy(threadPool_t * pthreadpool)
+void threadPool_destroy(thread_pool_t * pthreadpool)
 {
     if(pthreadpool)
     {
@@ -21,7 +21,7 @@ void threadPool_destroy(threadPool_t * pthreadpool)
 
 }
 
-void threadPool_start(threadPool_t * pthreadpool)
+void threadPool_start(thread_pool_t * pthreadpool)
 {
     for(int i = 0; i < pthreadpool->threadNumber; ++i)
     {
@@ -31,7 +31,7 @@ void threadPool_start(threadPool_t * pthreadpool)
 
 }
 
-void threadPool_stop(threadPool_t * pthreadpool)
+void threadPool_stop(thread_pool_t * pthreadpool)
 {
     while(!queue_isempty(&pthreadpool->queue))
     {
@@ -49,7 +49,7 @@ void *thread_func(void * arg)
     int peerfd;
     while(1)
     {
-        threadPool_t * pthreadpool = (threadPool_t *)arg;
+        thread_pool_t * pthreadpool = (thread_pool_t *)arg;
         //互斥锁
         pthread_mutex_lock(&pthreadpool->queue.mutex);
         //线程清理函数
@@ -83,7 +83,7 @@ void handle_command_rm();
 
 void handle_command_mkdir();
 
-void handle_event(int peerfd, threadPool_t * pthreadpool)
+void handle_event(int peerfd, thread_pool_t * pthreadpool)
 {
     char buf[BUFSIZ];
     bzero(buf, sizeof(buf));
@@ -140,6 +140,6 @@ void handle_command_mkdir(char *path)
 void clean_func(void *parg)
 {
     printf("clean\n");
-    threadPool_t * pthreadpool = (threadPool_t *)parg;
+    thread_pool_t * pthreadpool = (thread_pool_t *)parg;
     pthread_mutex_unlock(&pthreadpool->queue.mutex);
 }

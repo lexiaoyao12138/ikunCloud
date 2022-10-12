@@ -33,7 +33,7 @@ int main() {
 	config = init_config_t();
 	get_config(path, config);
 
-	threadPool_t pthread_pool;
+	thread_pool_t pthread_pool;
 	threadpool_init(&pthread_pool, config->pthread_num);
 	threadPool_start(&pthread_pool);
 
@@ -80,8 +80,10 @@ int main() {
 				if (tempFd == exit_pipe[0]) {
 					bzero(buf, sizeof(buf));
 					read(tempFd, buf, sizeof(buf));
-
+           
 					threadPool_stop(&pthread_pool);
+					threadPool_destroy(&pthread_pool);
+					exit(0);
 				}
 
 			}
