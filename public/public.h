@@ -29,6 +29,7 @@
 #include <sys/wait.h>
 #include <time.h>
 #include <unistd.h>
+#include <shadow.h>
 
 #define COMMAND_CD 2
 #define COMMAND_LS 3

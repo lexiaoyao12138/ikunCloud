@@ -80,8 +80,10 @@ int main() {
 				if (tempFd == exit_pipe[0]) {
 					bzero(buf, sizeof(buf));
 					read(tempFd, buf, sizeof(buf));
-
+           
 					threadPool_stop(&pthread_pool);
+					threadPool_destroy(&pthread_pool);
+					exit(0);
 				}
 
 			}
