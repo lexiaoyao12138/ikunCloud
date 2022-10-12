@@ -1,5 +1,5 @@
 #include "../public/public.h"
-#include "task_queue.h"
+#include "../server/task_queue.h"
 #include "../server/transfer.c"
 
 //int commd_analyse(char* cmd_in,struct tast_s*  ){
@@ -57,21 +57,27 @@ int main() {
     // 接下来要做的就是判断rdset中，有没有相应的fd
     if (FD_ISSET(STDIN_FILENO, &rdset)) {
       //将输入的命令发送至服务器
-      read(STDIN_FILENO, buff, sizeof(buff));
-      int res = send(clientfd,buff,strlen(buff),0);
+      res = read(STDIN_FILENO, buff, sizeof(buff));
+      if(res > 0){
+          //发送数据包头
+          send(clientfd,"ikun",4,0);
+      }
+      res = send(clientfd,buff,strlen(buff),0);
       ERROR_CHECK(res,-1,"send");
       if(res == 0){
         puts("链接断开！");
         exit(0);
       }
     } else if (FD_ISSET(clientfd, &rdset)) {
-      char *client_mode[2] = {"file","cmd"};
+      char *client_mode[2] = {"file","ikun"};
+      //接收数据包头
       res = recv(clientfd, buff, sizeof(buff), 0);
       ERROR_CHECK(res, -1, "read");
       if (res == 0) {
         puts("服务器断开连接");
         exit(0);
       }
+      //对不同的数据包头进行处理
       if(strcmp(buff,client_mode[0]) == 0){
         recv_file(clientfd);
       }else if(strcmp(buff,client_mode[1]) == 0){
