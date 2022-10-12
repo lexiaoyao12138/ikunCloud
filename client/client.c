@@ -18,6 +18,14 @@
 //
 //}
 
+int commd_is(char* cmd_mode,char* mode_list){
+    while(mode_list != NULL){
+        if(strcmp(cmd_mode,mode_list) == 0)
+            return 1;
+    }
+    return 0;
+}
+
 
 int main() {
 	int res;
@@ -57,21 +65,32 @@ int main() {
     // 接下来要做的就是判断rdset中，有没有相应的fd
     if (FD_ISSET(STDIN_FILENO, &rdset)) {
       //将输入的命令发送至服务器
+      char mode[10] = {0};
+      char *long_mode[3] = {"get","pull",NULL};
+      char *short_mode[6] = {"cd","ls","pwd","rm","mkdir",NULL};
+      char *p_buff = buff;
+      int p_mode = 0;
       res = read(STDIN_FILENO, buff, sizeof(buff));
-      if(res > 0){
-          //发送数据包头
-          send(clientfd,"ikun",4,0);
+      while(*(p_buff++) != ' '){
+        mode[p_mode] = *(p_buff);
       }
-      res = send(clientfd,buff,strlen(buff),0);
+      if(commd_is(mode,*long_mode))
+        send(clientfd,"ikun",4,0);
+      else if(commd_is(mode,*short_mode))
+        send(clientfd,"file",4,0);
+
+      //发送数据包头
+      res = send(clientfd,p_buff,strlen(p_buff),0);
       ERROR_CHECK(res,-1,"send");
       if(res == 0){
         puts("链接断开！");
         exit(0);
       }
-    } else if (FD_ISSET(clientfd, &rdset)) {
+    } 
+    else if (FD_ISSET(clientfd, &rdset)) {
       char *client_mode[2] = {"file","ikun"};
       //接收数据包头
-      res = recv(clientfd, buff, sizeof(buff), 0);
+      res = recv(clientfd, buff, 4, 0);
       ERROR_CHECK(res, -1, "read");
       if (res == 0) {
         puts("服务器断开连接");
