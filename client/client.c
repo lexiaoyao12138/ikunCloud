@@ -1,15 +1,22 @@
 #include "../public/public.h"
+#include "task_queue.h"
+#include "../server/transfer.c"
 
-int commd_analyse(char* cmd_in,struct ){
-    char cmd_mode[4] = {0};
-    char *pcmd = cmd_in;
-    while(*(pcmd++) != ' '){
-        *(cmd_mode++) = *pcmd;
-    }
-
-    if()
-
-}
+//int commd_analyse(char* cmd_in,struct tast_s*  ){
+//    char cmd_mode[5] = {0};
+//    char full_cmd_mode[13] ="COMMAND_";
+//    char *pcmd = cmd_in;
+//    char *pmode = cmd_mode;
+//    while(*(pcmd++) != ' '){
+//        *(pmode++) = *pcmd;
+//    }
+//    strcpy(full_cmd_mode+8,cmd_mode);
+//
+//    command_type cmd =  COMMAND_CD;
+//    switch()
+//    if()
+//
+//}
 
 int main( ) {
   // 1. 创建监听套接字
@@ -42,24 +49,39 @@ int main( ) {
      //也是一个传出参数，写入的是已经发生了就绪事件的
      //文件描述符
      select(clientfd + 1, &rdset, NULL, NULL, NULL);
+
+     char buff[BUFSIZ] = {0};
      
      //接下来要做的就是判断rdset中，有没有相应的fd
      if(FD_ISSET(STDIN_FILENO,&rdset)){
-         char buff[100] = {0};
          //1.第一种情况
          //获取从键盘输入的数据，换行符'\n'也会发过去
-         read(STDIN_FILENO, buff, sizeof(buff));
+         read(STDIN_FILENO, buff, BUFSIZ);
          //发送给服务器
-         write(clientfd, buff, strlen(buff));
+         send_circle(clientfd, buff, strlen(buff));
          //当ret为0时，表示该连接已经断开
          // if(ret == 0){
          //     break;
          // }
-         printf("from server:%s\n",buff);
      } else if (FD_ISSET(clientfd, &rdset)) {
-			printf("server reponse");
-		}
- }
+         //接收本次服务器的回应类型，文件/命令
+         dumpTruck_t truck;
+         recv_circle(clientfd,(char*)&truck,sizeof(truck)); 
+         char *client_mode[2] = {"file","cmd"};
+         //接收文件
+         if(strcmp(truck.data,client_mode[0]) == 0){
+            recv_file(clientfd);
+         }
+         //接收命令的返回数据
+         else if(strcmp(truck.data,client_mode[1]) == 0){
+            do{
+                recv_circle(clientfd,(char*)&truck,BUFSIZ);
+            }while(strlen(truck.data) < truck.length);
+            puts(truck.data);
+         }
+
+     }
+  }
 
 
   //5.关闭套接字
