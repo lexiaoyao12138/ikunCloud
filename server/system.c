@@ -50,8 +50,3 @@ int command_mkdir(char *path)
     ERROR_CHECK(ret,-1,"mkdir");
     return 0 ;
 }
-
-int main(void){
-    char path[] = "./";
-    command_ls(path);
-}

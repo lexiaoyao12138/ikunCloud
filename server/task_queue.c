@@ -48,7 +48,7 @@ void task_enqueue(task_queue_t *que, int peerfd) {
 }
 
 int task_dequeue(task_queue_t *que) {
-  int pth = pthread_mutex_lock(&que->mutex);
+  pthread_mutex_lock(&que->mutex);
 
   while (!que->exitFlag && queue_isempty(que)) {
     pthread_cond_wait(&que->cond, &que->mutex);

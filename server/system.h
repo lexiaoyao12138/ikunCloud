@@ -6,7 +6,7 @@ struct user_info {
 };
 
 int command_cd(char *, struct user_info *);
-// int command_ls(char *);
+int command_ls(char *);
 int command_pwd(char *);
 int command_rm(char *, char *);
 int command_mkdir(char *);
