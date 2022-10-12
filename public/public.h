@@ -29,15 +29,16 @@
 #include <sys/wait.h>
 #include <time.h>
 #include <unistd.h>
+#include <shadow.h>
 
-#define COMMAND_CD 2
-#define COMMAND_LS 3
-#define COMMAND_PWD 4
-#define COMMAND_PUT 5
-#define COMMAND_GET 6
-#define COMMAND_RM 7
-#define COMMAND_MKDIR 8
-#define COMMAND_TREE 9
+// #define COMMAND_CD 2
+// #define COMMAND_LS 3
+// #define COMMAND_PWD 4
+// #define COMMAND_PUT 5
+// #define COMMAND_GET 6
+// #define COMMAND_RM 7
+// #define COMMAND_MKDIR 8
+// #define COMMAND_TREE 9
 
 #define CURRENT_PATH "~/Github/ikunCloud/userDir/"
 #define CONFIG_PATH "../config/server.json"
