@@ -79,9 +79,11 @@ void handle_command_cd();
 
 void handle_command_pwd();
 
-void handle_command_rm();
+// void handle_command_rm();
 
-void handle_command_mkdir();
+// void handle_command_mkdir();
+
+void handle_command_ls(int peerfd);
 
 void handle_event(int peerfd, thread_pool_t * pthreadpool)
 {
@@ -98,7 +100,9 @@ void handle_event(int peerfd, thread_pool_t * pthreadpool)
        // handle_command_cd();
         printf("cd\n");
         break;
-    // case COMMAND_LS:
+    case 3:
+			handle_command_ls(peerfd);
+			break;
     // case COMMAND_PWD:
     //     handle_command_pwd();
     //     break;
@@ -113,6 +117,14 @@ void handle_event(int peerfd, thread_pool_t * pthreadpool)
             
     }
 
+}
+
+void handle_command_ls(int peerfd) {
+	char path[BUFSIZ] = "./";
+	command_ls(path);
+	puts(path);
+	int res = write(peerfd, path, strlen(path));
+	ERROR_CHECK(res, -1, "write");
 }
 
 void handle_command_cd()

@@ -40,7 +40,7 @@
 // #define COMMAND_MKDIR 8
 // #define COMMAND_TREE 9
 
-#define CURRENT_PATH "~/Github/ikunCloud/userDir/"
+#define CURRENT_PATH "../userDir"
 #define CONFIG_PATH "../config/server.json"
 
 #define ERROR_CHECK(ret, res, name)                                            \
