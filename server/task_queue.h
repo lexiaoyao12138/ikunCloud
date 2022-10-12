@@ -1,7 +1,18 @@
 #include "../public/public.h"
+typedef enum {
+  COMMAND_CD = 2,
+  COMMAND_LS = 3,
+  COMMAND_PWD = 4,
+  COMMAND_PUT = 5,
+  COMMAND_GET = 6,
+  COMMAND_RM = 7,
+  COMMAND_MKDIR = 8,
+} command_type;
+
 
 typedef struct task_s {
 	int peerfd;
+	command_type type;
 	struct task_s * pnext;
 }task_t;
 
