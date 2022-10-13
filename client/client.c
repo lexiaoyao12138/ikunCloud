@@ -60,12 +60,12 @@ int main() {
 			res = write(clientfd, "ikun", 4);
 			ERROR_CHECK(res, -1, "write");
 			/*------------------------------------------*/
-			puts("已发送ikun");
+			// puts("已发送ikun");
       //将输入的命令发送至服务器
       read(STDIN_FILENO, buff, sizeof(buff));
       int res = send(clientfd,buff,strlen(buff),0);
       ERROR_CHECK(res,-1,"send");
-			puts("send success");
+			//puts("send success");
       if(res == 0){
         puts("链接断开！");
         exit(0);

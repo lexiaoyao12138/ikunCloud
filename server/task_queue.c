@@ -29,8 +29,7 @@ int queue_isempty(task_queue_t *que) { return que->size == 0; }
 
 int get_tasksize(task_queue_t *que) { return que->size; }
 
-// 给任务节点的command_type 赋值
-void modify_command_type(command_type *type, char *buf);
+// void modify_command_type(command_type *type, char *buf);
 
 // 任务入队列
 void task_enqueue(task_queue_t *que, int peerfd) {
@@ -42,19 +41,7 @@ void task_enqueue(task_queue_t *que, int peerfd) {
 
 	// 新建任务节点
   task_newNode->peerfd = peerfd;
-  // 判断命令类型  NOTE: 读取火车头
-	bzero(buf, sizeof(buf));
-  res = read(peerfd, buf, 4);
-	printf("火车头: %s\n", buf);
-	ERROR_CHECK(res, -1, "read");
-  if (strcmp(buf, "ikun") == 0) {
-    bzero(buf, sizeof(buf));
-    res = read(peerfd, buf, sizeof(buf));
-		puts(buf);
-		// 设置command_type的值
-    modify_command_type(&task_newNode->type, buf);
-  }
-	task_newNode->pnext = NULL;
+  task_newNode->pnext = NULL;
 
   if (que->size == 0) {
     que->pFront = que->pRear = task_newNode;
@@ -99,28 +86,4 @@ void queue_wakeup(task_queue_t * que)
     que->exitFlag = 1;
     pthread_cond_broadcast(&que->cond);
 
-}
-
-void modify_command_type(command_type *type, char *buf) {
-  if (strcmp(buf, "cd") == 0) {
-    *type = 2;
-    return;
-  }
-  if (strcmp(buf, "ls\n") == 0) {
-    *type = 3;
-    return;
-  }
-  if (strcmp(buf, "pwd") == 0) {
-    *type = 4;
-    return;
-  }
-  if (strcmp(buf, "rm") == 0) {
-    *type = 7;
-    return;
-  }
-  if (strcmp(buf, "mkdir") == 0) {
-    *type = 8;
-    return;
-  }
-	*type = 0;
 }

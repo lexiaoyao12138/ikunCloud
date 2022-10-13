@@ -12,6 +12,12 @@ typedef struct {
 	char data[BUFSIZ];
 }dumptruck_t;
 
+// 响应数据包定义
+typedef struct {
+	char head[4];   /*change "ikun" or "file" */
+	char buf[BUFSIZ];  /*send real data*/
+} resp_data;
+
 void * threadFunc(void*);
 
 void * thread_func(void *);
