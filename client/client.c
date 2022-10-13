@@ -1,5 +1,5 @@
 #include "../public/public.h"
-// #include "task_queue.h"
+#include "../server/task_queue.h"
 #include "../server/transfer.c"
 
 //int commd_analyse(char* cmd_in,struct tast_s*  ){
@@ -17,6 +17,14 @@
 //    if()
 //
 //}
+
+int commd_is(char* cmd_mode,char* mode_list){
+    while(mode_list != NULL){
+        if(strcmp(cmd_mode,mode_list) == 0)
+            return 1;
+    }
+    return 0;
+}
 
 
 int main() {
@@ -62,8 +70,22 @@ int main() {
 			/*------------------------------------------*/
 			// puts("已发送ikun");
       //将输入的命令发送至服务器
-      read(STDIN_FILENO, buff, sizeof(buff));
-      int res = send(clientfd,buff,strlen(buff),0);
+      char mode[10] = {0};
+      char *long_mode[3] = {"get","pull",NULL};
+      char *short_mode[6] = {"cd","ls","pwd","rm","mkdir",NULL};
+      char *p_buff = buff;
+      int p_mode = 0;
+      res = read(STDIN_FILENO, buff, sizeof(buff));
+      while(*(p_buff++) != ' '){
+        mode[p_mode] = *(p_buff);
+      }
+      if(commd_is(mode,*long_mode))
+        send(clientfd,"ikun",4,0);
+      else if(commd_is(mode,*short_mode))
+        send(clientfd,"file",4,0);
+
+      //发送数据包头
+      res = send(clientfd,p_buff,strlen(p_buff),0);
       ERROR_CHECK(res,-1,"send");
 			//puts("send success");
       if(res == 0){
@@ -72,6 +94,7 @@ int main() {
       }
     } else if (FD_ISSET(clientfd, &rdset)) {
       char *client_mode[2] = {"file","ikun"};
+    } 
       res = recv(clientfd, buff, 4, 0);
       ERROR_CHECK(res, -1, "read");
 			puts(buff);
@@ -79,6 +102,7 @@ int main() {
         puts("服务器断开连接");
         exit(0);
       }
+      //对不同的数据包头进行处理
       if(strcmp(buff,client_mode[0]) == 0){
         recv_file(clientfd);
       }else if(strcmp(buff,client_mode[1]) == 0){
