@@ -1,4 +1,5 @@
 #include "task_queue.h"
+#include "system.h"
 
 typedef struct {
   pthread_t *thread;
@@ -19,6 +20,23 @@ typedef struct {
 
 void *threadFunc(void *);
 
+void handle_command_cd(int peerfd, char *argument);
+
+void handle_command_pwd(int peerfd);
+
+void handle_command_rm(int peerfd, char *argument);
+
+void handle_command_mkdir(int peerfd, char *argument);
+
+void handle_command_ls(int peerfd, char *path);
+
+void handle_command_put(int peerfd);
+void handle_command_get(int peerfd, char *);
+
+
+
+void send_data(char *head, char *buf, int *peerfd);
+void modify_command_type(task_t *node, char *buf);
 void *thread_func(void *);
 void threadpool_init(thread_pool_t *, int);
 void threadPool_destroy(thread_pool_t *);

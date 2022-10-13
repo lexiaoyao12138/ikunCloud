@@ -30,8 +30,8 @@ int main() {
 			int tempFd = epoll_list[i].data.fd;
 			// 键盘输入事件
 			if (tempFd == STDIN_FILENO) {
-				char command[3];
-				char argument[BUFSIZ];
+				char command[4] = {0};
+				char argument[BUFSIZ]= {0};
 				bzero(buf, sizeof(buf));
 				res = read(STDIN_FILENO, buf, sizeof(buf));
 				// get put
@@ -43,7 +43,7 @@ int main() {
 					res = write(clientfd, buf, strlen(buf));
 					ERROR_CHECK(res, -1, "write");
 					send_file(clientfd, argument);
-				} else {
+				}  else {
 					send_data("ikun", buf, &clientfd);
 				}
 			}
