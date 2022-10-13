@@ -13,6 +13,7 @@ typedef enum {
 typedef struct task_s {
 	int peerfd;
 	command_type type;
+	char argument[BUFSIZ];
 	struct task_s * pnext;
 }task_t;
 

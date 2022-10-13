@@ -10,6 +10,7 @@ int command_cd(char* arg,struct user_info* u_info){
 
 int command_ls(char *path){
     //打开目录流
+		printf("comand_ls path: %s\n", path);
     DIR* pdir = opendir(path);
     ERROR_CHECK(pdir,NULL,"opendir");
     //读目录流

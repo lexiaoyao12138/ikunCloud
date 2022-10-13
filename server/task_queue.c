@@ -36,11 +36,12 @@ void task_enqueue(task_queue_t *que, int peerfd) {
   pthread_mutex_lock(&que->mutex);
 
 	int res;
-  char buf[BUFSIZ];
   task_t *task_newNode = (task_t *)calloc(1, sizeof(task_t));
 
 	// 新建任务节点
   task_newNode->peerfd = peerfd;
+	task_newNode->type = 0;
+	strcpy(task_newNode->argument, "./");
   task_newNode->pnext = NULL;
 
   if (que->size == 0) {
