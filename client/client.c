@@ -94,7 +94,7 @@ int main() {
       }
     } else if (FD_ISSET(clientfd, &rdset)) {
       char *client_mode[2] = {"file","ikun"};
-    } 
+     
       res = recv(clientfd, buff, 4, 0);
       ERROR_CHECK(res, -1, "read");
 			puts(buff);
