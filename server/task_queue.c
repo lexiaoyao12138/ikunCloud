@@ -29,17 +29,25 @@ int queue_isempty(task_queue_t *que) { return que->size == 0; }
 
 int get_tasksize(task_queue_t *que) { return que->size; }
 
+// void modify_command_type(command_type *type, char *buf);
+
+// 任务入队列
 void task_enqueue(task_queue_t *que, int peerfd) {
   pthread_mutex_lock(&que->mutex);
-  task_t *pnewTask = (task_t *)calloc(1, sizeof(task_t));
-  pnewTask->peerfd = peerfd;
-  pnewTask->pnext = NULL;
+
+	int res;
+  char buf[BUFSIZ];
+  task_t *task_newNode = (task_t *)calloc(1, sizeof(task_t));
+
+	// 新建任务节点
+  task_newNode->peerfd = peerfd;
+  task_newNode->pnext = NULL;
 
   if (que->size == 0) {
-    que->pFront = que->pRear = pnewTask;
+    que->pFront = que->pRear = task_newNode;
   } else {
-    que->pRear->pnext = pnewTask;
-    que->pRear = pnewTask;
+    que->pRear->pnext = task_newNode;
+    que->pRear = task_newNode;
   }
   que->size++;
 
@@ -65,7 +73,7 @@ int task_dequeue(task_queue_t *que) {
     que->size--;
 
     pthread_mutex_unlock(&que->mutex);
-    free(delNote);
+    // free(delNote);
     return peerfd;
   }else{
     pthread_mutex_unlock(&que->mutex);

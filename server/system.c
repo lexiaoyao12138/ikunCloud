@@ -29,11 +29,9 @@ int command_ls(char *path){
 
 int command_pwd(char * cwd)
 {  
-    cwd = getcwd(NULL, 0);
+    // cwd = getcwd(NULL, 0);
+		strcpy(cwd, getcwd(NULL, 0));
     ERROR_CHECK(cwd, NULL, "get_current_dir_name");
-
-    puts(cwd);
-
     return 0;
 }
 
