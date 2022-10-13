@@ -69,7 +69,9 @@ void modify_command_type(task_t *node, char *buf) {
   // 解析命令
   if (ishave_space(buf)) {
     get_command(buf, command);
+		printf("command: %s", command);
     get_argument(buf, argument);
+		printf("agrunment: %s", argument);
     strcpy(node->argument, argument);
   } else {
     strcpy(command, buf);
@@ -85,6 +87,11 @@ void modify_command_type(task_t *node, char *buf) {
   }
   if (strcmp(command, "pwd\n") == 0 || strcmp(command, "pwd") == 0) {
     node->type = 4;
+    return;
+  }
+
+  if (strcmp(command, "put\n") == 0 || strcmp(command, "put") == 0) {
+    node->type = 5;
     return;
   }
   if (strcmp(command, "rm\n") == 0 || strcmp(command, "rm") == 0) {
@@ -107,6 +114,8 @@ void handle_command_rm(int peerfd, char *argument);
 void handle_command_mkdir(int peerfd, char *argument);
 
 void handle_command_ls(int peerfd, char *path);
+
+void handle_command_put(int peerfd);
 
 void handle_event(task_t node, thread_pool_t *pthreadpool) {
   puts("进入处理函数");
@@ -135,6 +144,8 @@ void handle_event(task_t node, thread_pool_t *pthreadpool) {
           bzero(buf, sizeof(buf));
           res = read(node.peerfd, buf, sizeof(buf));
           // 设置command_type的值
+					printf("之前modify");
+					puts(buf);
           modify_command_type(&node, buf);
           printf("handle_envet agrument: %s", node.argument);
         } else {
@@ -153,7 +164,9 @@ void handle_event(task_t node, thread_pool_t *pthreadpool) {
         case COMMAND_PWD:
           handle_command_pwd(node.peerfd);
           break;
+
         case COMMAND_PUT:
+          handle_command_put(node.peerfd);
           break;
         case COMMAND_GET:
           break;
@@ -210,6 +223,10 @@ void handle_command_rm(int peerfd, char *argument) {
 void handle_command_mkdir(int peerfd, char *agrument) {
   command_mkdir(agrument);
   send_data("ikun", "ok\n", &peerfd);
+}
+
+void handle_command_put(int peerfd) {
+	command_get(peerfd);
 }
 
 void clean_func(void *parg) {

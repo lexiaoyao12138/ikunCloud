@@ -1,4 +1,4 @@
-#include "public.h"
+#include "../public/public.h"
 
 typedef struct {
     int length;
@@ -132,6 +132,8 @@ void send_file(int peerfd, const char * filename)
 
 void recv_file(int peerfd)
 {
+
+	printf("进入recv file\n");
 	int res;
     int fds[2];
     off_t length = 0;
@@ -146,7 +148,8 @@ void recv_file(int peerfd)
     printf("file name:%s,name length:%d\n",truck.data,truck.length);
 
 	//接收本地文件
-	int wfd = open(truck.data, O_RDWR | O_CREAT | O_APPEND, -1, "open");
+	int wfd = open(truck.data, O_RDWR | O_CREAT | O_APPEND, -1);
+	ERROR_CHECK(wfd, -1, "open");
 
     //发送文件已接收大小
     struct stat st;

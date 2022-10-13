@@ -49,3 +49,8 @@ int command_mkdir(char *path)
     ERROR_CHECK(ret,-1,"mkdir");
     return 0 ;
 }
+
+int command_get(int peerfd) {
+	recv_file(peerfd);
+	return 0;
+}

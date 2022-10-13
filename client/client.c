@@ -1,5 +1,7 @@
 #include "client.h"
 
+void get_argument(char *buf, char *argument);
+
 int main() {
   int res, ready_num;
 	char buf[BUFSIZ];
@@ -15,10 +17,8 @@ int main() {
   serveraddr.sin_port = htons(8888);
   serveraddr.sin_addr.s_addr = inet_addr("127.0.0.1");
 
-  // 2.1 直接连接服务器
   res = connect(clientfd, (struct sockaddr *)&serveraddr, sizeof(serveraddr));
   ERROR_CHECK(res, -1, "connect");
-  // 当connet正常返回时，链接已经建立成功了
 
 	epoll_add(epfd, clientfd);
 	epoll_add(epfd, STDIN_FILENO);
@@ -30,9 +30,22 @@ int main() {
 			int tempFd = epoll_list[i].data.fd;
 			// 键盘输入事件
 			if (tempFd == STDIN_FILENO) {
+				char command[3];
+				char argument[BUFSIZ];
 				bzero(buf, sizeof(buf));
 				res = read(STDIN_FILENO, buf, sizeof(buf));
-				send_data("ikun", buf, &clientfd);
+				// get put
+				strncpy(command, buf, 3);
+				get_argument(buf, argument);
+				if (strcmp(command, "put") == 0) {
+					res = write(clientfd, "ikun", 4);
+					ERROR_CHECK(res, -1, "write");
+					res = write(clientfd, buf, strlen(buf));
+					ERROR_CHECK(res, -1, "write");
+					send_file(clientfd, argument);
+				} else {
+					send_data("ikun", buf, &clientfd);
+				}
 			}
 
 			// 客户端响应事件
@@ -40,5 +53,21 @@ int main() {
 				read_data(&tempFd);
 			}
 		}	
+  }
+}
+
+void get_argument(char *buf, char *argument) {
+  char temp[BUFSIZ] = {0};
+  int n = 0;
+  for (int i = 0; i < strlen(buf); i++) {
+    if (buf[i] != ' ') {
+      n++;
+      continue;
+    }
+    break;
+  }
+  int k = 0;
+  for (int i = n + 1; i < strlen(buf) - 1; i++) {
+    argument[k++] = buf[i];
   }
 }
