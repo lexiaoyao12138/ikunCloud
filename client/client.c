@@ -4,9 +4,10 @@ void get_argument(char *buf, char *argument);
 
 int main() {
   int res, ready_num;
-	char buf[BUFSIZ];
-	int epfd = epoll_create1(0);
-	struct epoll_event *epoll_list = (struct epoll_event*)calloc(10, sizeof(struct epoll_event));
+  char buf[100];
+  int epfd = epoll_create1(0);
+  struct epoll_event *epoll_list =
+      (struct epoll_event *)calloc(10, sizeof(struct epoll_event));
 
   int clientfd = socket(AF_INET, SOCK_STREAM, 0);
   ERROR_CHECK(clientfd, -1, "socket");
@@ -20,54 +21,27 @@ int main() {
   res = connect(clientfd, (struct sockaddr *)&serveraddr, sizeof(serveraddr));
   ERROR_CHECK(res, -1, "connect");
 
-	epoll_add(epfd, clientfd);
-	epoll_add(epfd, STDIN_FILENO);
+  epoll_add(epfd, clientfd);
+  epoll_add(epfd, STDIN_FILENO);
 
   // 事件循环
   while (1) {
-  	ready_num = epoll_wait(epfd, epoll_list, 10, -1);
-		for (int i = 0; i < ready_num; i++) {
-			int tempFd = epoll_list[i].data.fd;
-			// 键盘输入事件
-			if (tempFd == STDIN_FILENO) {
-				char command[4] = {0};
-				char argument[BUFSIZ]= {0};
+    ready_num = epoll_wait(epfd, epoll_list, 10, -1);
+    for (int i = 0; i < ready_num; i++) {
+      int tempFd = epoll_list[i].data.fd;
+      // 键盘输入事件
+      if (tempFd == STDIN_FILENO) {
 				bzero(buf, sizeof(buf));
-				res = read(STDIN_FILENO, buf, sizeof(buf));
-				// get put
-				strncpy(command, buf, 3);
-				get_argument(buf, argument);
-				if (strcmp(command, "put") == 0) {
-					res = write(clientfd, "ikun", 4);
-					ERROR_CHECK(res, -1, "write");
-					res = write(clientfd, buf, strlen(buf));
-					ERROR_CHECK(res, -1, "write");
-					send_file(clientfd, argument);
-				}  else {
-					send_data("ikun", buf, &clientfd);
-				}
-			}
+        res = read(STDIN_FILENO, buf, sizeof(buf));
+        ERROR_CHECK(res, -1, "read");
+        // 解析命令
+        parse_command(buf, clientfd);
+      }
 
-			// 客户端响应事件
-			if (tempFd == clientfd) {
-				read_data(&tempFd);
-			}
-		}	
-  }
-}
-
-void get_argument(char *buf, char *argument) {
-  char temp[BUFSIZ] = {0};
-  int n = 0;
-  for (int i = 0; i < strlen(buf); i++) {
-    if (buf[i] != ' ') {
-      n++;
-      continue;
+      // 客户端响应事件
+      if (tempFd == clientfd) {
+        read_data(&tempFd);
+      }
     }
-    break;
-  }
-  int k = 0;
-  for (int i = n + 1; i < strlen(buf) - 1; i++) {
-    argument[k++] = buf[i];
   }
 }

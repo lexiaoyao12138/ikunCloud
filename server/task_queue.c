@@ -40,8 +40,8 @@ void task_enqueue(task_queue_t *que, int peerfd) {
 
 	// 新建任务节点
   task_newNode->peerfd = peerfd;
-	task_newNode->type = 0;
-	strcpy(task_newNode->argument, "./");
+	// task_newNode->type = 0;
+	// strcpy(task_newNode->argument, "./");
   task_newNode->pnext = NULL;
 
   if (que->size == 0) {

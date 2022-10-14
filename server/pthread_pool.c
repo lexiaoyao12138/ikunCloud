@@ -54,8 +54,8 @@ void *thread_func(void *arg) {
     task_dequeue(&pthreadpool->queue);
     // 对应push, 线程pop
     pthread_cleanup_pop(1);
-    // 任务处理
-    handle_event(*temp_node, pthreadpool);
+		// 进行任务处理
+    handle_event(temp_node, pthreadpool);
     printf("Task done\n");
   }
 }
@@ -101,4 +101,21 @@ void get_argument(char *buf, char *argument) {
   for (int i = n + 1; i < strlen(buf) - 1; i++) {
     argument[k++] = buf[i];
   }
+}
+
+int epoll_add(int epoll_fd,int read_fd){
+    struct epoll_event event;
+    memset(&event,0,sizeof(event));
+    event.data.fd = read_fd;
+    event.events |= EPOLLIN;
+    int ret = epoll_ctl(epoll_fd,EPOLL_CTL_ADD,read_fd,&event);
+    ERROR_CHECK(ret,-1,"epoll");
+    return 0;
+}
+
+int epoll_del(int epoll_fd,int del_fd){
+    int ret = epoll_ctl(epoll_fd,EPOLL_CTL_DEL,del_fd,NULL);
+    ERROR_CHECK(ret,-1,"epoll");
+    close(del_fd);
+    return 0;
 }
