@@ -32,7 +32,7 @@ int get_tasksize(task_queue_t *que) { return que->size; }
 // void modify_command_type(command_type *type, char *buf);
 
 // 任务入队列
-void task_enqueue(task_queue_t *que, int peerfd) {
+void task_enqueue(task_queue_t *que, int peerfd, const char *ip, int port) {
   pthread_mutex_lock(&que->mutex);
 
 	int res;
@@ -40,8 +40,8 @@ void task_enqueue(task_queue_t *que, int peerfd) {
 
 	// 新建任务节点
   task_newNode->peerfd = peerfd;
-	// task_newNode->type = 0;
-	// strcpy(task_newNode->argument, "./");
+	strncpy(task_newNode->ip, ip, strlen(ip));
+	task_newNode->port = port;
   task_newNode->pnext = NULL;
 
   if (que->size == 0) {

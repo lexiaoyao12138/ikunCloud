@@ -73,7 +73,7 @@ int main() {
 					printf("client ip: %s, port: %d\n", client_ip, ntohs(client_addr.sin_port));
 
 					// 加入队列
-					task_enqueue(&pthread_pool.queue, clientFd);
+					task_enqueue(&pthread_pool.queue, clientFd, client_ip, ntohs(client_addr.sin_port));
 					// epoll_add(epfd, clientFd);
 				} 
 				if (tempFd == exit_pipe[0]) {

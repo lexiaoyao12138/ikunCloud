@@ -1,5 +1,6 @@
 #include "pthread_pool.h"
 
+#define now_path (path+strlen(path))
 
 int command_cd(char* arg,struct user_info* u_info){
     int ret = chdir(arg);
@@ -9,23 +10,107 @@ int command_cd(char* arg,struct user_info* u_info){
 }
 
 int command_ls(char *path){
-    //打开目录流
-		printf("comand_ls path: %s\n", path);
-    DIR* pdir = opendir(path);
-    ERROR_CHECK(pdir,NULL,"opendir");
-    //读目录流
     struct dirent* pdirent;
+    struct stat sta;
+
+    char buf[100] = {0};
+    char file_path[100] = {0};
+    strcpy(file_path,path);
+    int p_path = strlen(file_path);
+
+    int res = 0;
     errno = 0;
     int length = 0;
+    //打开目录流
+    DIR* pdir = opendir(path);
+    ERROR_CHECK(pdir,NULL,"opendir");
+    bzero(path,strlen(path));
+    //读目录流
     while((pdirent = readdir(pdir)) != NULL){
         char *name = pdirent -> d_name;
         if(name[0] == '.'){
             continue;
         }
-        sprintf(path+length,"%s|",name);
-        length += strlen(name)+1;
+        sprintf(file_path+p_path,"/%s",name);
+        res = stat(file_path,&sta);
+        ERROR_CHECK(res,-1,"stat");
+        
+        switch(sta.st_mode & S_IFMT){
+        case S_IFBLK :sprintf(now_path,"b");break;
+        case S_IFCHR :sprintf(now_path,"c");break;
+        case S_IFDIR :sprintf(now_path,"d");break;
+        case S_IFIFO :sprintf(now_path,"p");break;
+        case S_IFLNK :sprintf(now_path,"l");break;
+        case S_IFREG :sprintf(now_path,"-");break;
+        case S_IFSOCK:sprintf(now_path,"s");break;
+        default      :sprintf(now_path,"?");break;
+        }
+        
+        for(int i = 0; i < 3; ++i){
+            for(int j = 0;j < 3; ++j){
+                if(sta.st_mode >> (2 - i) * 3 + (2 - j)){
+                    switch(j){
+                    case 0:sprintf(now_path,"r");break;
+                    case 1:sprintf(now_path,"w");break;
+                    case 2:sprintf(now_path,"x");break;
+                    }
+                }else{
+                    sprintf(now_path,"-");
+                }
+            }
+        }
+
+        struct passwd* pwd = getpwuid(sta.st_uid);
+        struct group*  grp = getgrgid(sta.st_gid);
+
+
+        sprintf(now_path," %.3ld %s\t%s\t%ld",
+                           sta.st_nlink,pwd->pw_name,
+                           grp->gr_name,sta.st_size);
+
+        char time[1024] = {0};
+        strcpy(time,ctime(&sta.st_mtime));
+        int i = 0;
+        time[strlen(time) - 1] = '\0';
+        
+        sprintf(now_path,"\t%s %s\n",time,name);
     }
+
+    closedir(pdir);
     return 0;
+}
+
+//传入前将path清空,其需要的空间较大，BUFSIZ可能不足以容纳
+int  command_tree(const char* dirname,char *path, int indent)
+{
+    DIR *pdir = opendir(dirname);
+    struct dirent *pd;
+    struct stat sbuf;
+    chdir(dirname);
+
+    while((pd = readdir(pdir)) != NULL)
+    {
+        lstat(pd->d_name, &sbuf);
+
+        if(strcmp(pd->d_name, ".") == 0 || 
+                strcmp(pd->d_name, "..") == 0)
+        {
+            continue;
+        }
+        int depth = indent;
+        while(depth--)
+            sprintf(now_path,"| _");
+        sprintf(now_path,"%s\n", pd->d_name);   
+        depth = indent;
+        if(S_ISDIR(sbuf.st_mode))
+        {
+            command_tree(pd->d_name,path, depth+2);
+            sprintf(now_path,"|\n");
+        }
+
+    }
+    chdir("..");
+    closedir(pdir);
 }
 
 int command_pwd(char * cwd)
