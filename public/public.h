@@ -33,23 +33,18 @@
 #include <time.h>
 #include <unistd.h>
 #include <shadow.h>
+#include <syslog.h>
+#include <mysql/mysql.h>
 
-// #define COMMAND_CD 2
-// #define COMMAND_LS 3
-// #define COMMAND_PWD 4
-// #define COMMAND_PUT 5
-// #define COMMAND_GET 6
-// #define COMMAND_RM 7
-// #define COMMAND_MKDIR 8
-// #define COMMAND_TREE 9
 
 #define CURRENT_PATH "../userDir"
 #define CONFIG_PATH "../config/server.json"
+#define IPLEN	20   /*ip的长度*/
 
 #define ERROR_CHECK(ret, res, name)                                            \
   {                                                                            \
     if (ret == res) {                                                          \
-      printf("%s:on line %d", __FILE__, __LINE__);                            \
+      printf("%s:on line %d\n", __FILE__, __LINE__);                            \
       perror(name);                                                            \
       exit(0);                                                                 \
     }                                                                          \

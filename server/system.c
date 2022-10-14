@@ -22,7 +22,6 @@ int command_ls(char *path){
     errno = 0;
     int length = 0;
     //打开目录流
-	printf("comand_ls path: %s\n", path);
     DIR* pdir = opendir(path);
     ERROR_CHECK(pdir,NULL,"opendir");
     bzero(path,strlen(path));

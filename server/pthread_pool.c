@@ -46,7 +46,7 @@ void *thread_func(void *arg) {
       // 等待解锁
       pthread_cond_wait(&pthreadpool->queue.cond, &pthreadpool->queue.mutex);
     }
-    printf("Tasks...\n");
+    // printf("Tasks...\n");
     // peerfd = pthreadpool->queue.pFront->peerfd;
     temp_node = pthreadpool->queue.pFront;
     pthread_mutex_unlock(&pthreadpool->queue.mutex);
@@ -56,12 +56,13 @@ void *thread_func(void *arg) {
     pthread_cleanup_pop(1);
 		// 进行任务处理
     handle_event(temp_node, pthreadpool);
-    printf("Task done\n");
+		printf("client: %s:%d 断开连接\n", temp_node->ip, temp_node->port);
+    // printf("Task done\n");
   }
 }
 
 void clean_func(void *parg) {
-  printf("clean\n");
+  // printf("clean\n");
   thread_pool_t *pthreadpool = (thread_pool_t *)parg;
   pthread_mutex_unlock(&pthreadpool->queue.mutex);
 }
