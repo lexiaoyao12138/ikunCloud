@@ -30,6 +30,8 @@
 #include <time.h>
 #include <unistd.h>
 #include <shadow.h>
+#include <syslog.h>
+#include <mysql/mysql.h>
 
 // #define COMMAND_CD 2
 // #define COMMAND_LS 3
