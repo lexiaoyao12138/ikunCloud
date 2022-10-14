@@ -148,4 +148,3 @@ int tcp_init(char *host, int port) {
   ERROR_CHECK(res, -1, "listen");
   return listenfd;
 }
-
