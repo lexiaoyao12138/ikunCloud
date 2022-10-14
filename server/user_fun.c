@@ -1,10 +1,7 @@
 //编译时需连接动态库
 //-lcrypt
 #define _XOPEN_SOURCE //额外需要
-#include "public.h"
-#include <shadow.h> //额外需要
-#include <unistd.h> //额外需要
-//#include "pthread_pool.h"
+#include "../public/public.h"
 
 typedef struct {
 	int length;

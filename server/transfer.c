@@ -100,7 +100,7 @@ void send_file(int peerfd, const char * filename)
     int fds[2];
 	pipe(fds);
 
-	sleep(1);
+	// sleep(1);
 	//读取本地文件
 	int rfd = open(filename, O_RDWR);
 	ERROR_CHECK(rfd, -1, "open");
@@ -158,7 +158,7 @@ void recv_file(int peerfd)
     printf("file name:%s,name length:%d\n",truck.data,truck.length);
 
 	//接收本地文件
-	int wfd = open(truck.data, O_RDWR | O_CREAT | O_APPEND, -1);
+	int wfd = open(truck.data, O_RDWR | O_CREAT | O_APPEND, 0600/* , -1, "open" */);
 	ERROR_CHECK(wfd, -1, "open");
 
     //发送文件已接收大小

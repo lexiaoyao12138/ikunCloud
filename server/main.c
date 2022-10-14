@@ -1,7 +1,6 @@
-#include "../public/public.h"
+// #include "../public/public.h"
 #include "server.h"
 #include "pthread_pool.h"
-#include "tcp.h"
 
 int exit_pipe[2];
 
@@ -85,12 +84,6 @@ int main() {
 					threadPool_destroy(&pthread_pool);
 					exit(0);
 				}
-				// handle other command
-				// task_enqueue(&pthread_pool.queue, tempFd);
-				// bzero(buf, sizeof(buf));
-				// res = read(tempFd, buf, sizeof(buf));
-				// puts(buf);
-
 			}
 		}
 	}

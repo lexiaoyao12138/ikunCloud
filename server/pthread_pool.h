@@ -1,10 +1,6 @@
-#include "task_queue.h"
+// #include "task_queue.h"
+#include "../public/public.h"
 
-typedef struct {
-  pthread_t *thread;
-  int threadNumber;
-  task_queue_t queue; // 任务队列
-} thread_pool_t, *pthread_pool_t;
 
 typedef struct {
   int length;
@@ -29,15 +25,49 @@ struct user_info {
   char path[1024]; // 用户当前工作目录
 };
 
+typedef struct task_s {
+  int peerfd;            /*客户端标识*/
+  int count;             /*1 or 2*/
+  command_type type;     /*动作*/
+  int argument_len;      /*参数的字符长度*/
+  char argument[BUFSIZ]; /*命令参数*/
+  struct task_s *pnext;
+} task_t;
+
+typedef struct task_queue_s {
+  task_t *pFront;
+  task_t *pRear;
+  int size;     // 任务队列大小
+  int exitFlag; // 退出标志
+  pthread_mutex_t mutex;
+  pthread_cond_t cond;
+} task_queue_t;
+
+typedef struct {
+  pthread_t *thread;
+  int threadNumber;
+  task_queue_t queue; // 任务队列
+} thread_pool_t, *pthread_pool_t;
+
+void queue_init(task_queue_t *);
+void queue_destroy(task_queue_t *);
+int queue_isempty(task_queue_t *);
+void task_enqueue(task_queue_t *, int peerfd);
+int task_dequeue(task_queue_t *);
+int get_tasksize(task_queue_t *);
+void queue_wakeup(task_queue_t *);
+
+int tcp_init(char *host, int port);
+
 void *threadFunc(void *);
 
 void handle_command_cd(int peerfd, char *argument);
 
 void handle_command_pwd(int peerfd);
 
-void handle_command_rm(int peerfd, char *argument);
+void handle_command_rm(char *argument);
 
-void handle_command_mkdir(int peerfd, char *argument);
+void handle_command_mkdir(char *argument);
 
 void handle_command_ls(int peerfd, char *path);
 
@@ -52,12 +82,9 @@ void recv_file(int peerfd);
 int command_cd(char *, struct user_info *);
 int command_ls(char *);
 int command_pwd(char *);
-int command_rm(char *, char *);
+int command_rm(char *);
 int command_mkdir(char *);
 int command_tree();
-int command_put(int, char *);
-int command_get(int);
-
 
 
 int epoll_add(int, int);
@@ -86,4 +113,4 @@ void get_command(char*, char*);
 void get_argument(char*, char*);
 
 // 设置任务节点
-void set_task_node(task_t *);
+int set_task_node(task_t *);

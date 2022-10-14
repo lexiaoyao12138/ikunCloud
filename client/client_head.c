@@ -2,41 +2,42 @@
 
 // 对客户端发来的数据进行响应
 void read_data(int *peerfd) {
-	resp_node recv_node;
-	set_recv(peerfd, &recv_node);
-	// 判断
-	// 如果返回简单命令结果
-	if (recv_node.type == 2) {
-		// 命令行打印结果
-		puts(recv_node.response);
-		// 如果返回文件
-	} else if (recv_node.type == 3) {
-		// 接收文件
-	}
+  resp_node recv_node;
+  set_recv(peerfd, &recv_node);
+  // 判断
+  // 如果返回简单命令结果
+  if (recv_node.type == 2) {
+    // 命令行打印结果
+    puts(recv_node.response);
+    // 如果返回文件
+  } else if (recv_node.type == 3) {
+    // 接收文件
+    recv_file(*peerfd);
+  }
 }
 
 // 接收客户端发来的数据 设置填充接收数据包
-void set_recv(int* peerfd, resp_node* recv_node) {
-	int res;
-	int type;     /*保存接收数据类型*/
+void set_recv(int *peerfd, resp_node *recv_node) {
+  int res;
+  int type; /*保存接收数据类型*/
 
-	// 接收数据类型
-	res = read(*peerfd, (char*)&recv_node->type, sizeof(int));
-	ERROR_CHECK(res, -1, "read");
-	
-	// 第一次读取时判断客户端是否断开连接
-	if (res == 0) {
-		puts("The server is disconnected!");
-		exit(0);
-	}
+  // 接收数据类型
+  res = read(*peerfd, (char *)&recv_node->type, sizeof(int));
+  ERROR_CHECK(res, -1, "read");
 
-	// 接收数据长度
-	res = read(*peerfd, (char*)&recv_node->response_len, sizeof(int));
-	ERROR_CHECK(res, -1, "write");
+  // 第一次读取时判断客户端是否断开连接
+  if (res == 0) {
+    puts("The server is disconnected!");
+    exit(0);
+  }
 
-	// 接收数据内容
-	res = read(*peerfd, (char*)&recv_node->response, recv_node->response_len);
-	ERROR_CHECK(res, -1, "write");
+  // 接收数据长度
+  res = read(*peerfd, (char *)&recv_node->response_len, sizeof(int));
+  ERROR_CHECK(res, -1, "write");
+
+  // 接收数据内容
+  res = read(*peerfd, (char *)&recv_node->response, recv_node->response_len);
+  ERROR_CHECK(res, -1, "write");
 }
 
 int ishave_space(char *buf) {
@@ -77,50 +78,55 @@ void get_argument(char *buf, char *argument) {
 }
 
 void parse_command(char *buf, int peerfd) {
-	int num, res, count;
-  char command[4] = {0};
+  int num, res, count;
+  char command[6] = {0};
   char argument[BUFSIZ] = {0};
-	// 处理带参数的情况
+  // 处理带参数的情况
   if (ishave_space(buf)) {
-		int len;  /*记录参数的长度*/ 
-		count = 2;   /*发送命令的个数*/
+    int len;   /*记录参数的长度*/
+    count = 2; /*发送命令的个数*/
     // 提取动作
     get_command(buf, command);
     // 提取参数
     get_argument(buf, argument);
-		num = is_num(command);
-		// 命令协议
-		// 发送命令单词个数
-		res = write(peerfd, (char*)&count, sizeof(int));
-		ERROR_CHECK(res, -1, "write");
-		// 发送命令数字
-		res = write(peerfd, (char*)&num, sizeof(int));
-		ERROR_CHECK(res, -1, "write");
+    num = is_num(command);
+    // 命令协议
+    // 发送命令单词个数
+    res = write(peerfd, (char *)&count, sizeof(int));
+    ERROR_CHECK(res, -1, "write");
+    // 发送命令数字
+    res = write(peerfd, (char *)&num, sizeof(int));
+    ERROR_CHECK(res, -1, "write");
 
-		// 发送参数字符大小
-		len = strlen(argument);
-		res = write(peerfd, (char*)&len, sizeof(int));
-		// 发送参数
-		res = write(peerfd, argument, strlen(argument));
-		ERROR_CHECK(res, -1, "write");
+    // 发送参数字符大小
+    len = strlen(argument);
+    res = write(peerfd, (char *)&len, sizeof(int));
+    // 发送参数
+    res = write(peerfd, argument, strlen(argument));
+    ERROR_CHECK(res, -1, "write");
 
-		// 处理没有参数的情况
+    if (num == COMMAND_PUT) {
+      send_file(peerfd, argument); /*给服务器发送文件*/
+      return;
+    }
+
+    // 处理没有参数的情况
   } else {
-		count = 1;
+    count = 1;
     // 没有空格就是单个命令
-		num = is_num(buf);
-		// 命令协议
-		// 发送命令单词个数
-		res = write(peerfd, (char*)&count, sizeof(int));
-		ERROR_CHECK(res, -1, "write");
-		// 发送命令数字
-		res = write(peerfd, (char*)&num, sizeof(int));
-		ERROR_CHECK(res, -1, "write");
-	}
+    num = is_num(buf);
+    // 命令协议
+    // 发送命令单词个数
+    res = write(peerfd, (char *)&count, sizeof(int));
+    ERROR_CHECK(res, -1, "write");
+    // 发送命令数字
+    res = write(peerfd, (char *)&num, sizeof(int));
+    ERROR_CHECK(res, -1, "write");
+  }
 }
 
 int is_num(char *command) {
-	int type = 0;
+  int type = 0;
   if (strcmp(command, "cd\n") == 0 || strcmp(command, "cd") == 0) {
     type = 2;
   }
@@ -144,7 +150,7 @@ int is_num(char *command) {
     type = 8;
   }
 
-	return type;
+  return type;
 }
 
 int epoll_add(int epoll_fd, int read_fd) {

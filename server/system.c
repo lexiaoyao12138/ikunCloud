@@ -36,7 +36,7 @@ int command_pwd(char * cwd)
     return 0;
 }
 
-int command_rm(char *_dir_name, char *path)
+int command_rm(char *path)
 {
     int ret = rmdir(path);
     ERROR_CHECK(ret,-1,"rmdir");
@@ -48,19 +48,4 @@ int command_mkdir(char *path)
     int ret = mkdir(path,0666);
     ERROR_CHECK(ret,-1,"mkdir");
     return 0 ;
-}
-
-int command_get(int peerfd) {
-	recv_file(peerfd);
-	return 0;
-}
-
-int command_put(int peerfd, char* filename) {
-	int res;
-	char buf[10] = "file";
-	res = write(peerfd, buf, 4);
-	ERROR_CHECK(res, -1, "write");
-	printf("res: %d\n", res);
-	send_file(peerfd, filename);
-	return 0;
 }
