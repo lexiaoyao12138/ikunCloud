@@ -1,4 +1,4 @@
-#include "public.h"
+#include "../public/public.h"
 
 typedef struct {
     int length;
@@ -10,6 +10,8 @@ int send_circle(int fd, const char * buf, int length)
   const char* pbuf = buf;
 	int ret = 0;
 	int left = length;
+    time_t last_time = time(NULL);
+    time_t cur_time;
 
 	while(left > 0) {
 		ret = send(fd, pbuf, left, 0);
@@ -17,12 +19,14 @@ int send_circle(int fd, const char * buf, int length)
 			perror("send");
 			return -1;
         }else if(ret == 0){
-            puts("recv close!");
-            return -1;
+            cur_time = time(NULL);
+            if(difftime(cur_time,last_time) > 10.0)
+                return -1;
+        }else{
+            last_time = time(NULL);
+		    pbuf += ret;
+		    left -= ret;
         }
-
-		pbuf += ret;
-		left -= ret;
 	}
 	return length - left;
 }
@@ -31,18 +35,23 @@ int recv_circle(int fd, char * pbuf, int length)
 {
 	int ret = 0;
 	int left = length;
-
+    time_t last_time = time(NULL);
+    time_t cur_time;
+    
 	while(left > 0) {
 		ret = recv(fd, pbuf, left, 0);
 		if(ret < 0) {
 			perror("recv");
 			return -1;
         }else if(ret == 0){
-            puts("send close!");
-            return -1;
+            cur_time = time(NULL);
+            if(difftime(cur_time,last_time) > 10.0)
+                return -1;
+        }else{
+            last_time = time(NULL);
+		    pbuf += ret;
+		    left -= ret;
         }
-		pbuf += ret;
-		left -= ret;
 	}
 	return length - left;
 }
@@ -91,6 +100,7 @@ void send_file(int peerfd, const char * filename)
     int fds[2];
 	pipe(fds);
 
+	// sleep(1);
 	//读取本地文件
 	int rfd = open(filename, O_RDWR);
 	ERROR_CHECK(rfd, -1, "open");
@@ -132,6 +142,8 @@ void send_file(int peerfd, const char * filename)
 
 void recv_file(int peerfd)
 {
+
+	printf("进入recv file\n");
 	int res;
     int fds[2];
     off_t length = 0;
@@ -146,7 +158,8 @@ void recv_file(int peerfd)
     printf("file name:%s,name length:%d\n",truck.data,truck.length);
 
 	//接收本地文件
-	int wfd = open(truck.data, O_RDWR | O_CREAT | O_APPEND, -1, "open");
+	int wfd = open(truck.data, O_RDWR | O_CREAT | O_APPEND, 0600/* , -1, "open" */);
+	ERROR_CHECK(wfd, -1, "open");
 
     //发送文件已接收大小
     struct stat st;

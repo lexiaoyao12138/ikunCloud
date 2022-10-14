@@ -1,7 +1,7 @@
 SRCS:=$(wildcard *.c)
 OBJECTS:=$(patsubst %.c, %.o, $(SRCS))
 CC:=gcc
-LIBS:= -lpthread -lcjson
+LIBS:= -lpthread -lcjson -lcrypt
 SERVER:=server
 
 $(SERVER):$(OBJECTS)

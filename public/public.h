@@ -1,3 +1,6 @@
+#ifndef _PUBLIC_H_
+#define _PUBLIC_H_
+
 #include "cjson/cJSON.h"
 #include <arpa/inet.h>
 #include <dirent.h>
@@ -60,3 +63,21 @@
       printf("%s: %s\n", name, strerror(res));                                 \
     }                                                                          \
   } while (0);
+
+typedef enum {
+  COMMAND_CD = 2,
+  COMMAND_LS = 3,
+  COMMAND_PWD = 4,
+  COMMAND_PUT = 5,
+  COMMAND_GET = 6,
+  COMMAND_RM = 7,
+  COMMAND_MKDIR = 8,
+} command_type;
+
+
+int send_circle(int, const char*, int);
+int recv_circle(int, char*, int);
+void send_file(int, const char*);
+void recv_file(int);
+
+#endif
