@@ -5,9 +5,8 @@
 	"epoll_num": 1024,
 	"database": {
 		"host": "127.0.0.1",
-		"port": 22,
 		"user": "dong",
 		"passwd": "200303",
-		"db": "ikun",
-	},
+		"port": "3306"
+	}
 }
