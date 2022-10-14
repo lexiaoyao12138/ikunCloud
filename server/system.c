@@ -80,6 +80,39 @@ int command_ls(char *path){
     return 0;
 }
 
+//传入前将path清空,其需要的空间较大，BUFSIZ可能不足以容纳
+int  command_tree(const char* dirname,char *path, int indent)
+{
+    DIR *pdir = opendir(dirname);
+    struct dirent *pd;
+    struct stat sbuf;
+    chdir(dirname);
+
+    while((pd = readdir(pdir)) != NULL)
+    {
+        lstat(pd->d_name, &sbuf);
+
+        if(strcmp(pd->d_name, ".") == 0 || 
+                strcmp(pd->d_name, "..") == 0)
+        {
+            continue;
+        }
+        int depth = indent;
+        while(depth--)
+            sprintf(now_path,"| _");
+        sprintf(now_path,"%s\n", pd->d_name);   
+        depth = indent;
+        if(S_ISDIR(sbuf.st_mode))
+        {
+            command_tree(pd->d_name,path, depth+2);
+            sprintf(now_path,"|\n");
+        }
+
+    }
+    chdir("..");
+    closedir(pdir);
+}
+
 int command_pwd(char * cwd)
 {  
     // cwd = getcwd(NULL, 0);
