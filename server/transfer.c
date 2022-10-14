@@ -10,6 +10,8 @@ int send_circle(int fd, const char * buf, int length)
   const char* pbuf = buf;
 	int ret = 0;
 	int left = length;
+    time_t last_time = time(NULL);
+    time_t cur_time;
 
 	while(left > 0) {
 		ret = send(fd, pbuf, left, 0);
@@ -17,12 +19,14 @@ int send_circle(int fd, const char * buf, int length)
 			perror("send");
 			return -1;
         }else if(ret == 0){
-            puts("recv close!");
-            return -1;
+            cur_time = time(NULL);
+            if(difftime(cur_time,last_time) > 10.0)
+                return -1;
+        }else{
+            last_time = time(NULL);
+		    pbuf += ret;
+		    left -= ret;
         }
-
-		pbuf += ret;
-		left -= ret;
 	}
 	return length - left;
 }
@@ -31,18 +35,23 @@ int recv_circle(int fd, char * pbuf, int length)
 {
 	int ret = 0;
 	int left = length;
-
+    time_t last_time = time(NULL);
+    time_t cur_time;
+    
 	while(left > 0) {
 		ret = recv(fd, pbuf, left, 0);
 		if(ret < 0) {
 			perror("recv");
 			return -1;
         }else if(ret == 0){
-            puts("send close!");
-            return -1;
+            cur_time = time(NULL);
+            if(difftime(cur_time,last_time) > 10.0)
+                return -1;
+        }else{
+            last_time = time(NULL);
+		    pbuf += ret;
+		    left -= ret;
         }
-		pbuf += ret;
-		left -= ret;
 	}
 	return length - left;
 }
