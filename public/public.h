@@ -33,6 +33,8 @@
 #include <time.h>
 #include <unistd.h>
 #include <shadow.h>
+#include <syslog.h>
+#include <mysql/mysql.h>
 
 
 #define CURRENT_PATH "../userDir"
