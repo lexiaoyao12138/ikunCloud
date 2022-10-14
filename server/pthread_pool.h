@@ -8,8 +8,8 @@ typedef struct {
 } dumptruck_t;
 
 typedef enum {
-  response_str = 2,
-  response_file = 3,
+  response_str = 2,    /*普通命令类型*/
+  response_file = 3,    /*文件命令类型*/
 } Response_type;
 
 // 接受客户端数据包格式
@@ -49,28 +49,31 @@ typedef struct {
   task_queue_t queue; // 任务队列
 } thread_pool_t, *pthread_pool_t;
 
+// 队列初始化
 void queue_init(task_queue_t *);
+// 队列销毁
 void queue_destroy(task_queue_t *);
+// 判断队列是否为空
 int queue_isempty(task_queue_t *);
+// 任务入队
 void task_enqueue(task_queue_t *, int peerfd);
+/// 任务出队
 int task_dequeue(task_queue_t *);
+// 得到队列大小
 int get_tasksize(task_queue_t *);
+// 
 void queue_wakeup(task_queue_t *);
 
 int tcp_init(char *host, int port);
 
 void *threadFunc(void *);
 
+/* 处理各种命令封装接口*/
 void handle_command_cd(int peerfd, char *argument);
-
 void handle_command_pwd(int peerfd);
-
 void handle_command_rm(char *argument);
-
 void handle_command_mkdir(char *argument);
-
 void handle_command_ls(int peerfd, char *path);
-
 void handle_command_put(int peerfd);
 void handle_command_get(int peerfd, char *);
 
@@ -84,7 +87,7 @@ int command_ls(char *);
 int command_pwd(char *);
 int command_rm(char *);
 int command_mkdir(char *);
-int command_tree();
+int command_tree();   /*未实现*/
 
 
 int epoll_add(int, int);
