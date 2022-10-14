@@ -2,5 +2,12 @@
 	"host": "127.0.0.1",
 	"port": 8888,
 	"pthreadNum": 1024,
-	"epoll_num": 1024
+	"epoll_num": 1024,
+	"database": {
+		"host": "127.0.0.1",
+		"port": 22,
+		"user": "dong",
+		"passwd": "200303",
+		"db": "ikun",
+	},
 }
