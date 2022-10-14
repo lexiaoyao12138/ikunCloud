@@ -2,7 +2,6 @@
 #include "server.h"
 #include "pthread_pool.h"
 #include "tcp.h"
-#include "system.h"
 
 int exit_pipe[2];
 

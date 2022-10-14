@@ -100,6 +100,7 @@ void send_file(int peerfd, const char * filename)
     int fds[2];
 	pipe(fds);
 
+	sleep(1);
 	//读取本地文件
 	int rfd = open(filename, O_RDWR);
 	ERROR_CHECK(rfd, -1, "open");

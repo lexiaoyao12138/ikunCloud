@@ -33,17 +33,24 @@ void send_data(char *head, char *buf, int *peerfd) {
 
 void read_data(int *peerfd) {
   resp_data data;
-	char buf[BUFSIZ];
+  char buf[BUFSIZ];
   int res;
+	char buff[5] = {0};
 
-  bzero(buf, sizeof(*buf));
-  res = recv(*peerfd, buf, 4, 0);
-	if (res == 0) {
-		printf("客户端断开连接！");
-		exit(0);
-	}
+  res = read(*peerfd, buff, 4);
+	printf("buff: %s\n", buff);
+  if (res == 0) {
+    printf("客户端断开连接！");
+    exit(0);
+  }
   ERROR_CHECK(res, -1, "read");
-  bzero(buf, sizeof(*buf));
-  res = recv(*peerfd, buf, sizeof(buf), 0);
-  puts(buf);
+
+  if (strcmp(buff, "file") == 0) {
+		printf("-----------");
+    recv_file(*peerfd);
+  } else {
+    bzero(buf, sizeof(*buf));
+    res = read(*peerfd, buf, sizeof(buf));
+    puts(buf);
+  }
 }
