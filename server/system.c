@@ -48,7 +48,7 @@ int command_ls(char *path){
         
         for(int i = 0; i < 3; ++i){
             for(int j = 0;j < 3; ++j){
-                if(sta.st_mode >> (2 - i) * 3 + (2 - j)){
+                if(sta.st_mode >> ((2 - i) * 3 + (2 - j))){
                     switch(j){
                     case 0:sprintf(now_path,"r");break;
                     case 1:sprintf(now_path,"w");break;
@@ -111,6 +111,7 @@ int  command_tree(const char* dirname,char *path, int indent)
     }
     chdir("..");
     closedir(pdir);
+	return 0;
 }
 
 int command_pwd(char * cwd)
