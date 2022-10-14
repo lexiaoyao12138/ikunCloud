@@ -8,6 +8,6 @@
 		"port": 22,
 		"user": "dong",
 		"passwd": "200303",
-		"db": "ikun",
-	},
+		"db": "ikun"
+	}
 }

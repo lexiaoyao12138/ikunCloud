@@ -4,7 +4,6 @@
 // 结构体初始化
 config_t *init_config_t() {
 	config_t *config = (config_t *)calloc(1, sizeof(config_t));
-	config->host = (char *)malloc(sizeof(char));
 	return config;
 }
 
@@ -39,5 +38,24 @@ void get_config(const char *path, config_t *config) {
 	config->epoll_num = cphthread_num->valueint;
 	printf("epoll_num: %d\n", config->epoll_num);
 
+	// 解析数据库配置
+	cJSON *cdatabase = cJSON_GetObjectItem(json, "database");
+	cJSON *cdb_host = cJSON_GetObjectItem(cdatabase, "host");
+	cJSON *cdb_port = cJSON_GetObjectItem(cdatabase, "port");
+	config->db_port = cdb_port->valueint;
+	cJSON *cdb_user = cJSON_GetObjectItem(cdatabase, "user");
+	cJSON *cdb_passwd = cJSON_GetObjectItem(cdatabase, "passwd");
+	cJSON *cdb_name = cJSON_GetObjectItem(cdatabase, "db");
+
+	strcpy(config->db_host, cdb_host->valuestring);
+	strcpy(config->db_user, cdb_user->valuestring);
+	strcpy(config->db_passwd, cdb_passwd->valuestring);
+	strcpy(config->db_name, cdb_name->valuestring);
+
   cJSON_Delete(json);
 }
+
+// 数据库连接
+// void mysql_con(config_t *config, ) {
+// 	
+// }
