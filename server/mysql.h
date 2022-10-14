@@ -3,7 +3,7 @@
 
 #include "../public/public.h"
 
-MYSQL *mysql_init();    //数据库初始化
+MYSQL *mysql_init_();    //数据库初始化
 
 void ERROR_CHECK_MYSQL(MYSQL *mysql, int ret)       // 验证操作是否出错
 {

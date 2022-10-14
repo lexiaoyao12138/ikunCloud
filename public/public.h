@@ -44,7 +44,7 @@
 #define ERROR_CHECK(ret, res, name)                                            \
   {                                                                            \
     if (ret == res) {                                                          \
-      printf("%s:on line %d", __FILE__, __LINE__);                            \
+      printf("%s:on line %d\n", __FILE__, __LINE__);                            \
       perror(name);                                                            \
       exit(0);                                                                 \
     }                                                                          \

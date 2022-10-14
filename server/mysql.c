@@ -1,6 +1,6 @@
 #include "mysql.h"
 
-MYSQL * mysql_init()     // 数据库初始化
+MYSQL * mysql_init_()     // 数据库初始化
 {
     MYSQL * mysql = NULL;    //初始化句柄
     char * host = "127.0.0.1";    //主机IP
