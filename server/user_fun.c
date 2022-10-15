@@ -34,18 +34,15 @@ int client_login(int clientfd,const char *name,const char *key){
         puts("Dont have this user");
         return -1;
     }
-    puts(&control);
     //存在该用户，接收盐值
     res = p_recv(clientfd,salt);
     if(res == -1){
         puts("timeout");
         return -1;
     }    
-    puts(salt);
    
     //使用接收的盐值将密码加密后传输给服务器
     char *p_encode = crypt(key,salt);
-    puts(p_encode);
     //利用盐值将明文密码加密
     res = p_send(clientfd,p_encode);
     //接收服务器的验证结果
@@ -92,7 +89,6 @@ int server_login(int peerfd){
             num++;
         p_salt++;
     }
-    puts(salt);
     p_send(peerfd,salt);
     //send_circle(peerfd,salt,strlen(salt));
     //接收盐值数据
@@ -101,7 +97,6 @@ int server_login(int peerfd){
         puts("timeout");
         return -1;
     }    
-    puts(salt);
     //判断客户端密文与本地是否相同
     if(strcmp(salt,user_spwd->sp_pwdp) == 0){
         send_circle(peerfd,"1",1);
