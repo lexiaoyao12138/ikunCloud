@@ -53,7 +53,7 @@ int client_login(int clientfd,const char *name,const char *key){
     }    
     //密文验证失败打印提示信息，返回-1
     if(control == '0')
-        printf("Password error");
+        puts("Password error");
     //返回客户端登录结果
     return control == '1' ? 0 : -1;
 }

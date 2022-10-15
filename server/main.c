@@ -72,8 +72,21 @@ int main() {
 					const char *client_ip = inet_ntop(AF_INET, &client_addr.sin_addr.s_addr, buf, sizeof(buf));
 					printf("client ip: %s, port: %d\n", client_ip, ntohs(client_addr.sin_port));
 
-					// 加入队列
-					task_enqueue(&pthread_pool.queue, clientFd, client_ip, ntohs(client_addr.sin_port));
+					time_t start_time = time(NULL);                         
+                    time_t currt_time = time(NULL);
+                    int login = 0;
+                    while((login = server_login(clientFd)) && (difftime(currt_time,start_time) < 20)){
+                        currt_time = time(NULL);    
+                    }
+                    if(!login)
+                        // 加入队列
+				    	task_enqueue(&pthread_pool.queue, clientFd, client_ip, ntohs(client_addr.sin_port));
+                    else{
+                        puts("login fall!");
+                        close(clientFd);
+                    }
+                    // 加入队列
+					//task_enqueue(&pthread_pool.queue, clientFd, client_ip, ntohs(client_addr.sin_port));
 					// epoll_add(epfd, clientFd);
 				} 
 				if (tempFd == exit_pipe[0]) {

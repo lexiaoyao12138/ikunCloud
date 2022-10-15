@@ -21,6 +21,24 @@ int main() {
   res = connect(clientfd, (struct sockaddr *)&serveraddr, sizeof(serveraddr));
   ERROR_CHECK(res, -1, "connect");
 
+  time_t start_time = time(NULL);
+  time_t currt_time = time(NULL);
+  char name[100] = {0};
+  char key[100] = {0};
+  int login = 0;
+  do{
+    if(login){
+        puts("login fall please try again!");      
+    }
+    bzero(name,strlen(name));                                                
+    bzero(key,strlen(key));
+    currt_time = time(NULL);
+    puts("enter name:");
+    scanf("%s",name);
+    puts("enter key:");
+    scanf("%s",key);
+  } while((login = client_login(clientfd,name,key)) && (difftime(currt_time,start_time) < 20 ));
+ 
   epoll_add(epfd, clientfd);
   epoll_add(epfd, STDIN_FILENO);
 
