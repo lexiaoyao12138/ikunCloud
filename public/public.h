@@ -72,5 +72,7 @@ int send_circle(int, const char*, int);
 int recv_circle(int, char*, int);
 void send_file(int, const char*);
 void recv_file(int);
+int server_login(int );
+int client_login(int ,const char*,const char*);
 
 #endif
