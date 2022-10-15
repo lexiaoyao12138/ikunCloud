@@ -38,6 +38,8 @@ int main() {
     puts("enter key:");
     scanf("%s",key);
   } while((login = client_login(clientfd,name,key)) && (difftime(currt_time,start_time) < 20 ));
+
+  puts("login success!");
  
   epoll_add(epfd, clientfd);
   epoll_add(epfd, STDIN_FILENO);
