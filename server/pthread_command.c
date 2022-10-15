@@ -144,6 +144,6 @@ void handle_command_put(int peerfd) {
 }
 
 void handle_command_get(int peerfd, char *filename) {
-  send_data(&peerfd, 3, NULL);
+  send_data(&peerfd, 3, "get");
   send_file(peerfd, filename);
 }
