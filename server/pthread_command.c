@@ -1,4 +1,5 @@
 #include "pthread_pool.h"
+#include "log.h"
 
 int set_task_node(task_t *node) {
   int res;
@@ -26,6 +27,7 @@ int set_task_node(task_t *node) {
     // 读取命令数字
     res = read(node->peerfd, (char *)&node->type, sizeof(int)); /*设置命令*/
     ERROR_CHECK(res, -1, "write");
+    printf("type: %d\n", node->type);
     // 读取参数的长度
     res = read(node->peerfd, (char *)&node->argument_len, sizeof(int));
     ERROR_CHECK(res, -1, "read");
@@ -63,30 +65,42 @@ void handle_event(task_t *node, thread_pool_t *pthreadpool) {
 
         // printf("command_type: %d\n", node->type);
         // printf("argurment: %s\n", node->argument);
+    int fd_cmd = open("log1", O_RDWR|O_CREAT|O_TRUNC, 0666);                  
+ ERROR_CHECK(fd_cmd, -1, "open");
+
+          log_cmd(fd_cmd, node->ip, node->type, node->argument);
         switch (node->type) {
         case COMMAND_CD:
           handle_command_cd(node->peerfd, node->argument);
+          log_cmd(fd_cmd, node->ip, node->type, node->argument);
           break;
         case COMMAND_LS:
           handle_command_ls(node->peerfd, node->argument);
+          log_cmd(fd_cmd, node->ip, node->type, node->argument);
           break;
         case COMMAND_PWD:
           handle_command_pwd(node->peerfd);
+          log_cmd(fd_cmd, node->ip, node->type, node->argument);
           break;
         case COMMAND_PUT:
           handle_command_put(node->peerfd);
+          log_cmd(fd_cmd, node->ip, node->type, node->argument);
           break;
         case COMMAND_GET:
           handle_command_get(node->peerfd, node->argument);
+          log_cmd(fd_cmd, node->ip, node->type, node->argument);
           break;
         case COMMAND_RM:
           handle_command_rm(node->argument);
+          log_cmd(fd_cmd, node->ip, node->type, node->argument);
           break;
         case COMMAND_MKDIR:
           handle_command_mkdir(node->argument);
+          log_cmd(fd_cmd, node->ip, node->type, node->argument);
           break;
         default:
           return;
+        
         }
       }
     }
