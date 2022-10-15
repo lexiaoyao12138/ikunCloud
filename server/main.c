@@ -1,6 +1,8 @@
 // #include "../public/public.h"
 #include "server.h"
 #include "pthread_pool.h"
+#include "log.h"
+
 
 int exit_pipe[2];
 
@@ -47,6 +49,13 @@ int main() {
 	epoll_add(epfd, exit_pipe[0]);
 	epoll_event_list = (struct epoll_event*)calloc(config->epoll_num, sizeof(struct epoll_event));
 	
+    //日志
+    int fd_clnt = open("log", O_RDWR | O_CREAT | O_TRUNC, 0666);
+    ERROR_CHECK(fd_clnt, -1, "open");
+    int fd_cmd = open("log1", O_RDWR|O_CREAT|O_TRUNC, 0666);                  
+    ERROR_CHECK(fd_cmd, -1, "open");
+
+
 	while (1) {
 		epoll_ready_num = epoll_wait(epfd, epoll_event_list, config->epoll_num, -1);
 		if (epoll_ready_num == -1 && errno == EINTR) {
@@ -59,6 +68,7 @@ int main() {
 		} else {
 			for (int i = 0; i < epoll_ready_num; i++) {
 				int tempFd = epoll_event_list[i].data.fd;
+                char clnt_name[20] = {0};
 				// 新连接加入
 				if (tempFd == listenfd) {
 					client_addr_len = sizeof(client_addr);
@@ -75,9 +85,10 @@ int main() {
 					time_t start_time = time(NULL);                         
                     time_t currt_time = time(NULL);
                     int login = 0;
-                    while((login = server_login(clientFd)) && (difftime(currt_time,start_time) < 20)){
+                    while((login = server_login(clientFd, clnt_name)) && (difftime(currt_time,start_time) < 20)){
                         currt_time = time(NULL);    
                     }
+                    log_clnt(fd_clnt, clnt_name, 1);
                     if(!login)
                         // 加入队列
 				    	task_enqueue(&pthread_pool.queue, clientFd, client_ip, ntohs(client_addr.sin_port));
@@ -100,6 +111,8 @@ int main() {
 			}
 		}
 	}
+    close(fd_cmd);
+    close(fd_clnt);
 	close(listenfd);
 
 	return 0;

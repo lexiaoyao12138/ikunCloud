@@ -43,7 +43,7 @@ void log_clnt(int client_fd, const char *clnt, int loginflag)
 // clnt is the name of client executing command
 // cmd is what the client did
 // path is where the client did
-void log_cmd(int cmd_fd, const char *clnt, const char *ip, char *cmd, char *path)
+void log_cmd(int cmd_fd, const char *ip, int cmd, char *path)
 {
     
     time_t now;
@@ -54,11 +54,39 @@ void log_cmd(int cmd_fd, const char *clnt, const char *ip, char *cmd, char *path
     ntime[strlen(ntime) - 1] = '\0';
     int ret = dprintf(cmd_fd, "%s", ntime);
     ERROR_CHECK(ret, -1, "dprintf");
-    dprintf(cmd_fd, "  %s %s %s %s\n", clnt, ip, cmd, path);
+    char *type;
+    printf("%d\n", cmd);
+    switch(cmd)
+    {
+    case 2:
+        type = "cd";
+        break;
+    case 3:
+        type = "ls";
+        break;
+    case 4:
+        type = "pwd";
+        break;
+    case 5:
+        type = "put file";
+        break;
+    case 6:
+        type = "get file";
+        break;
+    case 7:
+        type = "rm";
+        break;
+    case 8:
+        type = "mkdir";
+        break;
+    default:
+        return;
+    }
+    dprintf(cmd_fd, "  %s %s %s\n", ip, type, path);
 
     // sent messages to syslog
-    openlog(clnt, LOG_CONS | LOG_PID, LOG_LOCAL0);
-    syslog(LOG_INFO, "ip: %s %s(%s)", ip, cmd, path);
+    openlog(ip, LOG_CONS | LOG_PID, LOG_LOCAL0);
+    syslog(LOG_INFO, "%s(%s)", type, path);
     closelog();
 }
 
