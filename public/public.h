@@ -35,6 +35,7 @@
 #include <shadow.h>
 #include <syslog.h>
 #include <mysql/mysql.h>
+#include <crypt.h>
 
 
 #define CURRENT_PATH "../userDir"
