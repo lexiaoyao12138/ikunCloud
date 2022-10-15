@@ -34,15 +34,18 @@ int client_login(int clientfd,const char *name,const char *key){
         puts("Dont have this user");
         return -1;
     }
+    puts(&control);
     //存在该用户，接收盐值
-    res = recv_circle(clientfd,salt,12);
+    res = p_recv(clientfd,salt);
     if(res == -1){
         puts("timeout");
         return -1;
     }    
+    puts(salt);
    
     //使用接收的盐值将密码加密后传输给服务器
     char *p_encode = crypt(key,salt);
+    puts(p_encode);
     //利用盐值将明文密码加密
     res = p_send(clientfd,p_encode);
     //接收服务器的验证结果
@@ -79,20 +82,26 @@ int server_login(int peerfd){
         res = send_circle(peerfd,"0",1);
         return -1;
     }
+    res = send_circle(peerfd,"1",1);
     //有该用户，将control“1”及盐值发送至客服端
-    salt[0] = '1';
-    int p_salt = 1;
-    while(p_salt < 13){
-        salt[p_salt] = *(user_spwd->sp_pwdp + p_salt -1);
+    int p_salt = 0;
+    int num = 0;
+    while(num < 3){
+        salt[p_salt] = *(user_spwd->sp_pwdp + p_salt);
+        if(salt[p_salt] == '$')
+            num++;
         p_salt++;
     }
-    send_circle(peerfd,salt,strlen(salt));
-    //接收盐值确定长度的数据
+    puts(salt);
+    p_send(peerfd,salt);
+    //send_circle(peerfd,salt,strlen(salt));
+    //接收盐值数据
     res = p_recv(peerfd,salt);
     if(res == -1){
         puts("timeout");
         return -1;
     }    
+    puts(salt);
     //判断客户端密文与本地是否相同
     if(strcmp(salt,user_spwd->sp_pwdp) == 0){
         send_circle(peerfd,"1",1);
