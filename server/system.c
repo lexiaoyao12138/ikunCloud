@@ -128,6 +128,7 @@ int command_rm(char *path)
     struct stat sta;
     char file_path[100] = {0};
     char *p_path;
+	char first = path[0];
     //判断当前输入的是绝对路径还是当前目录下的路径
     if(*path == '.'){
         //当前目录下的路径与当前工作目录拼接
