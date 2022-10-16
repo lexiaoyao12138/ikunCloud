@@ -59,7 +59,7 @@ int client_login(int clientfd,const char *name,const char *key){
 }
 
 //传入套接字
-int server_login(int peerfd){
+int server_login(int peerfd, char * clnt_name){
     int res = 0;
     char salt[512] = {0};
     char name[100] = {0};
@@ -100,6 +100,7 @@ int server_login(int peerfd){
     //判断客户端密文与本地是否相同
     if(strcmp(salt,user_spwd->sp_pwdp) == 0){
         send_circle(peerfd,"1",1);
+        strcpy(clnt_name, name);
         return 0;//相同
     }else{
         send_circle(peerfd,"0",1);
